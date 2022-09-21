@@ -89,9 +89,10 @@ const ImageMarked = styled('span')(({ theme }) => ({
 export default function ProdcutIMage(props) {
   return (
     <Box
-      style={{
+      sx={{
         width: "150px",
-        height: "150px"
+        height: "150px",
+        boxShadow: 10,
       }}
     >
       <ImageButton
