@@ -3,9 +3,25 @@ import ProductImage from "../models/productImagesModel.js";
 
 //PRODUCT SAVE
 export const saveProduct = async (req, res) => {
+  // const { productImage, ...others } = req.body;
   try {
     const newProducts = await Products.create(req.body);
+    // const newProductImages = await ProductImage.create(productImage);
+    // const result = await newProducts.addProductImage(newProductImages, { through: { selfGranted: false } });
+
     res.status(201).json(newProducts);
+
+    // req.body.productImage.map(async (item)=>{
+    //   try {
+    //     const newProductImages = await ProductImage.create({
+    //       productImages:item,
+    //       productId: req.body.id
+    //     });
+    //     res.status(201).json({...newProducts,...newProductImages});
+    //   } catch (error) {
+    //     res.status(500).json(error);
+    //   }
+    // });
     // try {
     //   const products = await Products.findAll();
     //   res.status(201).json(products);
@@ -23,7 +39,23 @@ export const getProducts = async (req, res) => {
     // const users = await Users.findAll({
     //   attributes: ["id", "username", "email", "userrole", "refresh_token"],
     // });
-    const products = await ProductImage.findAll();
+    const products = await Products.findAll();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getProductsWithProductImage = async (req, res) => {
+  try {
+    // const users = await Users.findAll({
+    //   attributes: ["id", "username", "email", "userrole", "refresh_token"],
+    // });
+    const products = await Products.findAll(
+      {
+        include: ["productImage"],
+      }
+    );
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json(error);
