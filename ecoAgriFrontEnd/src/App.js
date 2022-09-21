@@ -15,19 +15,20 @@ import Donate from './components/pages/farmer/Donate';
 import AddDonateProduct from './components/pages/farmer/AddDonateProduct';
 import FarmerProfile from './components/pages/farmer/Profile';
 import Articals from './components/pages/farmer/Articals';
-// import Carousel from './components/ui/Carousel/Carousel';
 import BuyProduct from './components/pages/BuyProduct';
 import AdminDashboard from './components/pages/admin/AdminDashboard';
 import ManageUsers from './components/pages/admin/ManageUsers';
 import CreateUsers from './components/pages/admin/CreateUsers';
 import ConfirmArticals from './components/pages/moderator/ConfirmArticals';
 import ModeratorProfile from './components/pages/moderator/Profile';
-import Carousel from './components/ui/Carousel';
 import Landing from './components/pages/Landing';
 
 import BuyerDashboard from './components/pages/buyer/Dashboard';
 import BuyDetails from './components/pages/buyer/BuyDetails';
 import BuyerProfile from './components/pages/buyer/Profile';
+import ForgetPassword from './components/pages/ForgetPassword';
+import OtpVerify from './components/pages/OtpVerify';
+import Checkout from './components/checkout/Checkout';
 
 function App() {
   const theme = createTheme({
@@ -51,6 +52,8 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
+
           <Route path="/test" element={<Test />} />
           <Route path="/farmer/dashboard" element={<DashBoard />} />
           <Route path="/buy" element={<Buy />} />
@@ -81,6 +84,10 @@ function App() {
           {/* <Route path="/buy-product/" element={<BuyProduct />} /> */}
           <Route path="/buy-product/:productId" element={<BuyProduct />} />
           {/* <Route path="/testing" element={<GoogleMapContainer />} /> */}
+
+
+          <Route path="/otp-verify" element={<OtpVerify />} />
+          {/* <Route path="/checkout" element={<Checkout />} /> */}
         </Routes>
       </ThemeProvider>
     </StyledEngineProvider>
