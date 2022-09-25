@@ -46,10 +46,9 @@ export default function MainTab(props) {
 
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
-    console.log(userType);
     return (
         <ThemeProvider theme={theme}>
-            {/* {userType === "Farmer" && */}
+            {userType === "Farmer" &&
                 <Tabs
                     value={value}
                     onChange={handleChange}
@@ -92,7 +91,7 @@ export default function MainTab(props) {
                         icon={<Avatar></Avatar>}
                     />
                 </Tabs>
-            {/* } */}
+            }
             {userType === "Buyer" &&
                 <Tabs
                     value={value}

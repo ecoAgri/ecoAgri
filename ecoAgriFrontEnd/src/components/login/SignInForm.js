@@ -8,6 +8,7 @@ import PasswordInputField from "../ui/PasswordInputField";
 import { login } from "../../store/userApiCalls";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 function SignInForm() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function SignInForm() {
 
   const user = useSelector((state) => state.user.currentUser);
   let userError = useSelector((state) => state.user.error);
+  let userType = useSelector((state) => state.user.userType);
   const dispatch = useDispatch();
 
   const loginPress = async (e) => {
@@ -38,7 +40,44 @@ function SignInForm() {
       setErrorMessagePassword("Password can't be empty!");
     } else {
       console.log(userData);
-      await login(dispatch, userData);
+      const loginResult = await login(dispatch, userData);
+      if (loginResult) {
+        if (userType === "Admin") {
+          // window.location.href = "/admin/dashboard";
+          navigate("/admin/dashboard");
+          loginSuccess();
+        } else if (userType === "Moderator") {
+          // window.location.href = "/moderator/dashboard";
+          navigate("/moderator/dashboard");
+          loginSuccess();
+        } else if (userType === "Farmer") {
+          // window.location.href = "farmer/dashboard";
+          navigate("/farmer/dashboard");
+          loginSuccess();
+        } else if (userType === "Buyer") {
+          // window.location.href = "buyer/dashboard";
+          navigate("/buyer/dashboard");
+          loginSuccess();
+        }
+        // Swal.fire({
+        //   title: "Login Success!",
+        //   icon: "success",
+        //   confirmButtonColor: "#3085d6",
+        //   confirmButtonText: "Ok",
+        // }).then((result) => {
+        //   if (result.isConfirmed) {
+
+        //   }
+        // });
+      } else {
+        navigate("/login");
+        Swal.fire({
+          icon: "error",
+          text: "Login Unsuccess!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
       const TOKEN = JSON.parse(localStorage.getItem("accessToken"));
       console.log(TOKEN);
       // setLoginErrorSet(userError);
@@ -52,17 +91,27 @@ function SignInForm() {
       // }
     }
   };
+
+  const loginSuccess = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Login Success!",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   return (
     <form onSubmit={loginPress}>
-      <Grid container sx={{ mb: 3 }}>
+      <Grid container sx={{ mb: 3, zIndex: 0 }}>
         <Grid item xs={12}>
           <CenteredBox align="center">
-            <Typography>Welcome Back !</Typography>
+            <Typography color="primary" variant="h4" sx={{p: 2}}>Welcome Back !</Typography>
           </CenteredBox>
         </Grid>
         <Grid item xs={12}>
           <CenteredBox align="center">
-            <Typography>Please, Login</Typography>
+            <Typography variant="h5">Please, Login</Typography>
           </CenteredBox>
         </Grid>
       </Grid>
@@ -101,7 +150,7 @@ function SignInForm() {
           />
           <CenteredBox align="right">
             <p className={classes.text}>
-              <a href="#">Forget Password?</a>
+              <a onClick={() => {navigate("/forget-password")}}>Forget Password?</a>
             </p>
           </CenteredBox>
         </Grid>
@@ -113,12 +162,19 @@ function SignInForm() {
             fullWidth
             style={{ textTransform: "none", borderRadius: 10 }}
           >
-            {" "}
-            Sign In{" "}
+            Sign In
           </Button>
           <CenteredBox align="center">
             <p className={classes.text}>
-              Don't have an account? <a style={{cursor: "pointer"}} onClick={() => {navigate("/registration")}}>sign up</a>
+              Don't have an account?{" "}
+              <a
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  navigate("/registration");
+                }}
+              >
+                sign up
+              </a>
             </p>
           </CenteredBox>
         </Grid>

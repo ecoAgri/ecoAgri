@@ -8,7 +8,7 @@ function BuyProduct() {
     return (
         <React.Fragment>
             <MainHeader value={2} />
-            <Grid container sx={{pt: "100px"}} spacing={5}>
+            <Grid container sx={{ pt: "100px", px: 5 }} spacing={5}>
                 <Grid item xs={12} sm={7}>
                     <BuyProductLeft />
                 </Grid>
