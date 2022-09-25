@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import { storage } from '../../../Firebase';
 import { v4 } from "uuid";
 import { async } from '@firebase/util';
+import AddProductContext from '../../../context/AddProduct-context';
 
 function AddProductForm(props) {
   const style = {
@@ -186,20 +187,22 @@ function AddProductForm(props) {
   const [productImages, setProductImages] = useState([]);
   const [productImageUrls, setProductImageUrls] = useState([]);
   const [imageUploadingCount, setImageUploadingCount] = useState([]);
+  console.log(productImages);
   const deleteImageHandler = () => {
     const images = productImages;
     setProductImages(images);
     console.log("deleted")
   }
 
+  const [liveLocation, setLiveLocation] = useState(null);
+  console.log(liveLocation);
   let formIsValid = false;
 
-  if (productNameIsValid && productCategoryIsValid && weightIsValid && unitPriceIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "sellProduct")) {
+  if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && unitPriceIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "sellProduct")) {
     formIsValid = true;
-  } else if (productNameIsValid && productCategoryIsValid && weightIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "donateProduct")) {
+  } else if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "donateProduct")) {
     formIsValid = true;
   }
-
 
   if (props.productName !== undefined) {
     productName = props.productName;
@@ -221,7 +224,11 @@ function AddProductForm(props) {
   }
 
   const onSubmitHandler = async (e) => {
-    console.log('hell')
+    console.log(liveLocation);
+
+    if (!formIsValid) {
+      return;
+    }
     e.preventDefault();
     let imagePath = [];
     let imageRef = [];
@@ -268,188 +275,192 @@ function AddProductForm(props) {
     if (imageUploadingCount === productImages.length) {
       console.log(productImageUrls);
     }
-    // const imagePath = `images/profile/${profileImageData.name + v4()}`
-    // const uploadTask = uploadBytesResumable(imageRef, profileImageData);
-    // if (!formIsValid) {
-    //   return;
-    // }
-    // const data = {
-    //   productName: productName,
-    //   productCategory: productCategory,
-    //   weight: weight,
-    //   unitPrice: unitPrice,
-    //   manuDate: manuDate,
-    //   expireDate: expireDate,
-    //   images: productImageUrls.map((image) => {
-    //     return image
-    //   })
-    // };
+
+    const data = {
+      productName: productName,
+      productCategory: productCategory,
+      weight: weight,
+      unitPrice: unitPrice,
+      manuDate: manuDate,
+      expireDate: expireDate,
+      images: productImageUrls.map((image) => {
+        return image
+      }),
+      latitude: liveLocation.lat,
+      longitude: liveLocation.lng,
+    };
 
     // console.log(data);
     //api call here
   }
   return (
-    <Box sx={style}>
-      <form onSubmit={onSubmitHandler} noValidate>
-        <Grid container sx={{ mb: 3 }}>
-          <Grid item xs={12}>
-            <CenteredBox align="center">
-              <Typography variant="h5">Enter Product Details</Typography>
-            </CenteredBox>
+    <AddProductContext.Provider value={{
+      productImages: productImages,
+      liveLocation: liveLocation,
+      setLiveLocation: setLiveLocation,
+      setProductImages: setProductImages
+    }}>
+      <Box sx={style}>
+        <form onSubmit={onSubmitHandler} noValidate>
+          <Grid container sx={{ mb: 3 }}>
+            <Grid item xs={12}>
+              <CenteredBox align="center">
+                <Typography variant="h5">Enter Product Details</Typography>
+              </CenteredBox>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              label="Product Name"
-              type="text"
-              name="ProductName"
-              value={productName}
-              onChange={productNameChangeHandler}
-              onBlur={productNameBlurHandler}
-              error={productNameHasError}
-              helperText={productNameHasError ? productNameError : ""}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth required error={productCategoryHasError}>
-              <InputLabel>Product Category</InputLabel>
-              <Select
-                label="Product Category"
-                value={productCategory}
-                onChange={productCategoryChangeHandler}
-                onBlur={productCategoryBlurHandler}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={"Fruit"}>Fruit</MenuItem>
-                <MenuItem value={"Vegetable"}>Vegetable</MenuItem>
-              </Select>
-              <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl variant="outlined" fullWidth required error={weightHasError}>
-              <InputLabel htmlFor="outlined-adornment-password">Weight</InputLabel>
-              <OutlinedInput
-                type="number"
-                value={weight}
-                onChange={weightChangeHandler}
-                onBlur={weightBlurHandler}
-                endAdornment={
-                  <InputAdornment position="end">kg</InputAdornment>
-                }
-                label="Weight"
-              />
-              <FormHelperText>{weightHasError ? weightError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            {props.productType === "sellProduct" &&
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 required
-                label="Unit Price"
-                type="number"
-                name="unitPrice"
-                value={unitPrice}
-                onChange={unitPriceChangeHandler}
-                onBlur={unitPriceBlurHandler}
-                error={unitPriceHasError}
-                helperText={unitPriceHasError ? unitPriceError : ""}
+                label="Product Name"
+                type="text"
+                name="ProductName"
+                value={productName}
+                onChange={productNameChangeHandler}
+                onBlur={productNameBlurHandler}
+                error={productNameHasError}
+                helperText={productNameHasError ? productNameError : ""}
               />
-            }
-          </Grid>
-          <Grid item xs={6}>
-            <InputLabel htmlFor="outlined-adornment-password">Manufacture date*</InputLabel>
-            <FormControl variant="outlined" fullWidth required error={manuDateHasError}>
-              <OutlinedInput
-                type="date"
-                value={manuDate}
-                onChange={manuDateChangeHandler}
-                onBlur={manuDateBlurHandler}
-              // label="Manufacture date"
-              />
-              <FormHelperText>{manuDateHasError ? manuDateError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <InputLabel htmlFor="outlined-adornment-password">Expire Date*</InputLabel>
-            <FormControl variant="outlined" fullWidth required error={expireDateHasError}>
-              <OutlinedInput
-                type="date"
-                value={expireDate}
-                onChange={expireDateChangeHandler}
-                onBlur={expireDateBlurHandler}
-              // label="Manufacture date"
-              />
-              <FormHelperText>{expireDateHasError ? expireDateError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              label="Field Address"
-              type="text"
-              name="fieldAddress"
-              value={fieldAddress}
-              onChange={fieldAddressChangeHandler}
-              onBlur={fieldAddressBlurHandler}
-              error={fieldAddressHasError}
-              helperText={fieldAddressHasError ? fieldAddressError : ""}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <div>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width / 4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width / 4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width / 4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width / 4}px`} />
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <SetLocationModal />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label={
-                <p className={classes.text}>
-                  Make sure you have set your product location
-                </p>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth required error={productCategoryHasError}>
+                <InputLabel>Product Category</InputLabel>
+                <Select
+                  label="Product Category"
+                  value={productCategory}
+                  onChange={productCategoryChangeHandler}
+                  onBlur={productCategoryBlurHandler}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={"Fruit"}>Fruit</MenuItem>
+                  <MenuItem value={"Vegetable"}>Vegetable</MenuItem>
+                </Select>
+                <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl variant="outlined" fullWidth required error={weightHasError}>
+                <InputLabel htmlFor="outlined-adornment-password">Weight</InputLabel>
+                <OutlinedInput
+                  type="number"
+                  value={weight}
+                  onChange={weightChangeHandler}
+                  onBlur={weightBlurHandler}
+                  endAdornment={
+                    <InputAdornment position="end">kg</InputAdornment>
+                  }
+                  label="Weight"
+                />
+                <FormHelperText>{weightHasError ? weightError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              {props.productType === "sellProduct" &&
+                <TextField
+                  fullWidth
+                  required
+                  label="Unit Price"
+                  type="number"
+                  name="unitPrice"
+                  value={unitPrice}
+                  onChange={unitPriceChangeHandler}
+                  onBlur={unitPriceBlurHandler}
+                  error={unitPriceHasError}
+                  helperText={unitPriceHasError ? unitPriceError : ""}
+                />
               }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              fullWidth
-              variant="contained"
-              type="submit"
-              style={{ textTransform: "none" }}
-            // disabled={!formIsValid}
-            >
-              Submit
-            </Button>
-          </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <InputLabel htmlFor="outlined-adornment-password">Manufacture date*</InputLabel>
+              <FormControl variant="outlined" fullWidth required error={manuDateHasError}>
+                <OutlinedInput
+                  type="date"
+                  value={manuDate}
+                  onChange={manuDateChangeHandler}
+                  onBlur={manuDateBlurHandler}
+                // label="Manufacture date"
+                />
+                <FormHelperText>{manuDateHasError ? manuDateError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <InputLabel htmlFor="outlined-adornment-password">Expire Date*</InputLabel>
+              <FormControl variant="outlined" fullWidth required error={expireDateHasError}>
+                <OutlinedInput
+                  type="date"
+                  value={expireDate}
+                  onChange={expireDateChangeHandler}
+                  onBlur={expireDateBlurHandler}
+                // label="Manufacture date"
+                />
+                <FormHelperText>{expireDateHasError ? expireDateError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                required
+                label="Field Address"
+                type="text"
+                name="fieldAddress"
+                value={fieldAddress}
+                onChange={fieldAddressChangeHandler}
+                onBlur={fieldAddressBlurHandler}
+                error={fieldAddressHasError}
+                helperText={fieldAddressHasError ? fieldAddressError : ""}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <div>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    <UploadProduct id={1} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={2} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={3} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={4} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                  </Grid>
+                </Grid>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <SetLocationModal onSetLiveLocation={setLiveLocation} />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label={
+                  <p className={classes.text}>
+                    Make sure you have set your product location
+                  </p>
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                style={{ textTransform: "none" }}
+                disabled={!formIsValid}
+              >
+                Submit
+              </Button>
+            </Grid>
 
-        </Grid>
-      </form>
-    </Box>
-
+          </Grid>
+        </form>
+      </Box>
+    </AddProductContext.Provider>
   )
 }
 

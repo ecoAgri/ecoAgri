@@ -33,7 +33,14 @@ export default function AddPostButton(props) {
 
   return (
     <div>
-      <Button fullWidth variant="contained" style={{ textTransform: "none" }} onClick={handleOpen}>Set the Location</Button>
+      <Button
+        fullWidth
+        variant="contained"
+        style={{ textTransform: "none" }}
+        onClick={handleOpen}
+      >
+        Set the Location
+      </Button>
       <Modal
         open={open}
         aria-labelledby="modal-modal-title"
@@ -54,7 +61,7 @@ export default function AddPostButton(props) {
               <Grid item xs={12}>
                 <div style={{ height: "400px", overflowY: "auto" }}>
                   <div>
-                    <GoogleMapContainer />
+                    <GoogleMapContainer mapType="get_live_location" />
                   </div>
                 </div>
               </Grid>
