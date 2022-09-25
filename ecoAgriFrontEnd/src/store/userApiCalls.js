@@ -41,50 +41,63 @@ export const login = async (dispatch, user) => {
     const res = await publicRequest.post("/login", user);
     console.log(res);
     dispatch(loginSuccess(res.data));
-    if (res.data.userrole === "Admin") {
-      window.location.href = "/admin/dashboard";
-    } else if (res.data.userrole === "Moderator") {
-      window.location.href = "/moderator/dashboard";
-    } else if (res.data.userrole === "Farmer") {
-      window.location.href = "farmer/dashboard";
-    } else if (res.data.userrole === "Buyer") {
-      window.location.href = "buyer/dashboard";
-    }
+    return 1;
   } catch (err) {
     dispatch(loginFailure());
+    return 0;
   }
 };
 
-export const getUsers = async (dispatch) => {
+export const getUsers = async (dispatch,token) => {
   dispatch(getUserStart());
   try {
-    const res = await userRequest.get("/users");
+    const res = await userRequest.get("/users",{
+      headers: {
+        "Content-Type": "application/json",
+        token: `Bearer ${token}`,
+      },
+    });
     dispatch(getUserSuccess(res.data));
   } catch (err) {
     dispatch(getUserFailure());
   }
 };
 
-export const deleteUser = async (id, dispatch) => {
+export const deleteUser = async (id, dispatch,token) => {
   dispatch(deleteUserStart());
   try {
-    const res = await userRequest.delete(`/user/${id}`);
+    const res = await userRequest.delete(`/user/${id}`,{
+      headers: {
+        "Content-Type": "application/json",
+        token: `Bearer ${token}`,
+      },
+    });
     dispatch(deleteUserSuccess(id));
   } catch (err) {
     dispatch(deleteUserFailure());
   }
 };
 
-export const updateUser = async (id, User, dispatch) => {
+export const updateUser = async (id, User, dispatch, token) => {
   dispatch(updateUserStart());
   try {
     // update
-    const res = await userRequest.put(`/user/${id}`);
+    const res = await userRequest.put(`/user/${id}`,{
+      headers: {
+        "Content-Type": "application/json",
+        token: `Bearer ${token}`,
+      },
+    });
     dispatch(updateUserSuccess({ id, User }));
   } catch (err) {
     dispatch(updateUserFailure());
   }
 };
+
+export const logOutUser = async (dispatch) => {
+  dispatch(logout());
+};
+
 // export const addUserWithAuth = async (User, dispatch) => {
 //   dispatch(addUserStart());
 //   try {

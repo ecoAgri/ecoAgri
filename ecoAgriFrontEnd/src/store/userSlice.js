@@ -6,6 +6,7 @@ const userSlice = createSlice({
     currentUser: null,
     otherUsers: null,
     isFetching: false,
+    userType:null,
     token: null,
     error: false,
   },
@@ -17,6 +18,7 @@ const userSlice = createSlice({
       state.isFetching = false;
       state.currentUser = action.payload;
       state.token = action.payload.accessToken;
+      state.userType = action.payload.userrole;
     },
     loginFailure: (state) => {
       state.isFetching = false;
@@ -28,6 +30,7 @@ const userSlice = createSlice({
       state.error = false;
       state.otherUsers = null;
       state.token = null;
+      state.userType = null;
     },
 
     //GET ALL
