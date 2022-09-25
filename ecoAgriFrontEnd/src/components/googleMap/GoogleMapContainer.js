@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   useJsApiLoader,
   GoogleMap,
@@ -10,8 +10,10 @@ import { Box, Stack } from '@mui/system';
 import { Button, ButtonGroup, Grid, IconButton, TextField, Typography } from '@mui/material';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import CloseIcon from '@mui/icons-material/Close';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import "./GoogleMapContainer.css";
-
+import axios from "axios";
+import AddProductContext from '../../context/AddProduct-context';
 
 const style = {
   position: 'absolute',
@@ -22,23 +24,68 @@ const style = {
   bgcolor: 'background.paper',
   p: 2,
   width: 450
-  // boxShadow: 24,
-  // pt: 0,
-  // pr: 0
 };
+const API_KEY = "AIzaSyALcSlRXEsNoL2uMQtEx9x01OUAiXnbAj0"
 
-const center = { lat: 6.864908, lng: 79.899681 }
-
-function GoogleMapContainer() {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyCRfgjfFDYHisegvLIyjG3-E87rFD64kXk",
-    libraries: ['places'],
+function setLocationAddress(lat, lng, locationType) {
+  axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`
+  ).then((response) => {
+    locationType(response.data.results[0].formatted_address)
   })
-
+}
+function GoogleMapContainer(props) {
+  const ctx = useContext(AddProductContext);
   const [map, setMap] = useState(/** @type google.maps.Map */(null))
   const [directionsResponse, setDirectionsResponse] = useState(null)
   const [distance, setDistance] = useState('')
   const [duration, setDuration] = useState('')
+
+  const [center, setCenter] = useState(null)
+  const [origin, setOrigin] = useState(null);
+
+  //product location here
+  const [destination, setDestination] = useState({ lng: 79.88389509223174, lat: 6.872037471140445 });
+
+  const setPath = async () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setCenter({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      })
+      setLocationAddress(position.coords.latitude, position.coords.longitude, setOrigin);
+      setLocationAddress(destination.lat, destination.lng, setDestination);
+    })
+    calculateRoute(origin, destination)
+  }
+
+  async function getLiveLocation() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setCenter({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      })
+    })
+  }
+
+  useEffect(() => {
+    if (props.mapType !== "get_live_location") {
+      setPath()
+    } else {
+      getLiveLocation();
+      navigator.geolocation.getCurrentPosition((position) => {
+        ctx.setLiveLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      })
+    }
+  }, [origin, destination])
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: API_KEY,
+    libraries: ['places'],
+  })
+
 
   /** @type React.MutableRefObject<HTMLInputElement> */
   const originRef = useRef()
@@ -49,18 +96,21 @@ function GoogleMapContainer() {
     return <p>Loading ...</p>
   }
 
-  async function calculateRoute() {
-    if (originRef.current.value === '' || destiantionRef.current.value === '') {
+
+  async function calculateRoute(origin, destination) {
+    console.log(origin, destination)
+    if (origin === '' || destination === '') {
       return
     }
     // eslint-disable-next-line no-undef
     const directionsService = new google.maps.DirectionsService()
     const results = await directionsService.route({
-      origin: originRef.current.value,
-      destination: destiantionRef.current.value,
+      origin: origin,
+      destination: destination,
       // eslint-disable-next-line no-undef
       travelMode: google.maps.TravelMode.DRIVING,
     })
+    console.log(results);
     setDirectionsResponse(results)
     setDistance(results.routes[0].legs[0].distance.text)
     setDuration(results.routes[0].legs[0].duration.text)
@@ -74,6 +124,13 @@ function GoogleMapContainer() {
     destiantionRef.current.value = ''
   }
 
+  const markerChangeHandler = (e) => {
+    setCenter({lat: e.latLng.lat(), lng: e.latLng.lng()})
+    ctx.setLiveLocation({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+  }
 
   return (
     <Box sx={{
@@ -81,7 +138,6 @@ function GoogleMapContainer() {
       position: "relative"
     }}
     >
-
       <GoogleMap
         center={center}
         zoom={15}
@@ -90,11 +146,20 @@ function GoogleMapContainer() {
           zoomControl: false,
           streetViewControl: false,
           mapTypeControl: false,
-          fullscreenControl: false,
+          // fullscreenControl: false,
         }}
         onLoad={map => setMap(map)}
       >
-        <Marker position={center} />
+        <Marker position={center}
+          icon="https://i.imgur.com/oz3r3Wq.png"
+          onDragEnd={markerChangeHandler}
+          draggable={true}
+        />
+        {props.mapType !== "get_live_location" &&
+          <Marker position={destination}
+            icon="https://i.imgur.com/cIooqnp.png"
+          />
+        }
         {directionsResponse && (
           <DirectionsRenderer directions={directionsResponse} />
         )}
@@ -123,7 +188,7 @@ function GoogleMapContainer() {
             </Autocomplete>
           </Grid>
           <Grid item xs={2}>
-            <Button sx={{ p: "3px" }} variant="outlined" style={{ textTransform: "none" }} type='submit' onClick={calculateRoute}>
+            <Button sx={{ p: "3px" }} variant="outlined" style={{ textTransform: "none" }} type='submit' onClick={() => { calculateRoute(originRef.current.value, destiantionRef.current.value) }}>
               Distance
             </Button>
           </Grid>
@@ -134,10 +199,10 @@ function GoogleMapContainer() {
           </Grid>
         </Grid >
         <Grid container sx={{ mt: 2 }}>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <Typography>Distance: {distance} </Typography>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <Typography>Duration: {duration} </Typography>
           </Grid>
           <Grid item xs={2}>
@@ -149,6 +214,11 @@ function GoogleMapContainer() {
               }}
             >
               <NavigationIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={2}>
+            <IconButton sx={{ p: "3px" }} onClick={getLiveLocation}>
+              <GpsFixedIcon />
             </IconButton>
           </Grid>
         </Grid>
