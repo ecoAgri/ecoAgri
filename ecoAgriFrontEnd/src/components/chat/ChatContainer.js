@@ -8,8 +8,7 @@ import { Grid, IconButton, Typography } from '@mui/material';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import CenteredBox from '../ui/CenteredBox';
 import CloseIcon from '../ui/CloseIcon';
-import BottomAppBar from './BottomAppBar';
-import Conversation from './Conversation';
+import Coverstaions from './Coverstaions';
 
 const style = {
     position: 'absolute',
@@ -33,6 +32,8 @@ export default function ChatContainer(props) {
     const handleClose = () => setOpen(false);
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
+
+    const [selectContactdetails, setSelectContactdetails] = React.useState({ value1: 0, value2: "Chat for AthPotha" });
     return (
         <div>
             <IconButton
@@ -43,12 +44,11 @@ export default function ChatContainer(props) {
             </IconButton>
             <Modal
                 open={open}
-                // onClose={handleClose}
+            // onClose={handleClose}
             >
                 <Box sx={style}>
                     <CloseIcon onClose={handleClose} />
-                    {/* <Conversation /> */}
-                    <BottomAppBar />
+                    <Coverstaions setSelectContactdetails={setSelectContactdetails} />
                 </Box>
             </Modal>
         </div >

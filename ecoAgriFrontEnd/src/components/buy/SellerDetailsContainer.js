@@ -11,6 +11,7 @@ import SellerDetails from './SellerDetails';
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router';
 import GoogleMapContainer from '../googleMap/GoogleMapContainer';
+import TomTomMapContainer from '../tomtomMap/TomTomMapContainer';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -50,7 +51,7 @@ export default function SellerDetailsContainer(props) {
                         <Grid item xs={12}>
                             {/* map here */}
                             <GoogleMapContainer />
-
+                            {/* <TomTomMapContainer /> */}
                             {/* <ImageListItem style={{ borderRadius: 10 }}>
                                 <img
                                     src={`${props.img}?w=248&fit=crop&auto=format`}
