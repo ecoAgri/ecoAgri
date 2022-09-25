@@ -326,6 +326,7 @@ function SignUpForm(props) {
         ...data,
         registerNo: "",
         img: "",
+        isAccept: false,
       };
     } else {
       //image upload part

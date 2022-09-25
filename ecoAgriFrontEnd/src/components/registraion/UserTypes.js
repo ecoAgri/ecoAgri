@@ -17,7 +17,7 @@ function UserTypes(props) {
             <Grid container>
                 <Grid item xs={12}>
                     <CenteredBox align="center">
-                        <Button variant="outlined" onClick={typeSelectorHandler}><Avatar sx={{ height: 100, width: 100 }} src={props.image} /></Button>
+                        <Button variant="outlined" onClick={() => {props.onClick(props.userType)}}><Avatar sx={{ height: 100, width: 100 }} src={props.image} /></Button>
                     </CenteredBox>
                 </Grid>
                 <Grid item xs={12}>
