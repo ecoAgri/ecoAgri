@@ -9,6 +9,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import CenteredBox from '../ui/CenteredBox';
 import CloseIcon from '../ui/CloseIcon';
 import Coverstaions from './Coverstaions';
+import Test from './Test';
 
 const style = {
     position: 'absolute',
@@ -33,7 +34,6 @@ export default function ChatContainer(props) {
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
 
-    const [selectContactdetails, setSelectContactdetails] = React.useState({ value1: 0, value2: "Chat for AthPotha" });
     return (
         <div>
             <IconButton
@@ -48,7 +48,8 @@ export default function ChatContainer(props) {
             >
                 <Box sx={style}>
                     <CloseIcon onClose={handleClose} />
-                    <Coverstaions setSelectContactdetails={setSelectContactdetails} />
+                    {/* <Test id="chat-div-id" /> */}
+                    <Coverstaions />
                 </Box>
             </Modal>
         </div >

@@ -10,6 +10,7 @@ import CenteredBox from '../ui/CenteredBox';
 import { Box, Button, Typography } from '@mui/material';
 import SellerDetailsContainer from './SellerDetailsContainer';
 import { useNavigate } from 'react-router';
+import ProdcutCard from './ProdcutCard';
 
 export default function BuyProducts(props) {
     const navigate = useNavigate();
@@ -21,29 +22,7 @@ export default function BuyProducts(props) {
                 </Grid>
                 {itemData.map((item) => (
                     <Grid key={item.key} item xs={12} sm={6} md={4} lg={3}>
-                        <ImageListItem style={{ borderRadius: 10 }}>
-                            <img
-                                src={`${item.img}?w=248&fit=crop&auto=format`}
-                                srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                alt={item.title}
-                                loading="lazy"
-                                style={{ height: "230px" }}
-                            />
-                            <ImageListItemBar
-                                title={item.title}
-                                subtitle={item.author}
-                                actionIcon={
-                                    <Button
-                                        variant='contained'
-                                        style={{ textTransform: "none" }}
-                                        sx={{ p: 0, mt: 3, mr: 2 }}
-                                        onClick={()=> {navigate(`/buy-product/${props.id}`)}}
-                                    >
-                                        Request
-                                    </Button>
-                                }
-                            />
-                        </ImageListItem>
+                        <ProdcutCard item={item} />
                     </Grid>
                 ))}
             </Grid>

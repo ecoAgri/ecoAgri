@@ -10,7 +10,7 @@ function SampleNextArrow(props) {
     return (
         <div
             className={className}
-            style={{ ...style, display: "block", background: "#007A31", borderRadius: 20}}
+            style={{ ...style, display: "block", background: "#007A31", borderRadius: 20 }}
             onClick={onClick}
         />
     );
@@ -21,7 +21,7 @@ function SamplePrevArrow(props) {
     return (
         <div
             className={className}
-            style={{ ...style, display: "block", background: "#007A31", borderRadius: 20}}
+            style={{ ...style, display: "block", background: "#007A31", borderRadius: 20 }}
             onClick={onClick}
         />
     );
@@ -67,11 +67,11 @@ function LandingPageCarousel() {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ mb: 8 }}>
             <div>
                 <Slider {...settings}>
                     {itemData.map((item) => (
-                        <Box key={item.key} sx={{ pr: 2 }}>
+                        <Box key={item.key} sx={{ px: 1 }}>
                             <ProdcutCard item={item} />
                         </Box>
                     ))}
@@ -204,5 +204,4 @@ const itemData = [
         </Grid>,
     },
 ];
-
 export default LandingPageCarousel

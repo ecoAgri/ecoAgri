@@ -4,16 +4,16 @@ import SearchBar from '../ui/Searchbar'
 import SelectLoactionModal from './SelectLoactionModal'
 function BuyProductActions() {
     return (
-        <Box sx={{ p: 3 }}>
-            <Grid container>
-                <Grid item xs={6}>
+        <div>
+            <Grid container sx={{ p: 3 }}>
+                <Grid item xs={12} sm={12} md={6}>
                     <SelectLoactionModal />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={12} md={6}>
                     <SearchBar placeholder="What are you looking for..." />
                 </Grid>
             </Grid>
-        </Box>
+        </div>
     )
 }
 

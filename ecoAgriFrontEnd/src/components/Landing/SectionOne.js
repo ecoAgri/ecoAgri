@@ -5,8 +5,9 @@ import './home.css';
 import './main.css';
 
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import BenifitListItem from './BenifitListItem';
+import LandingPageCarousel from './LandingPageCarousel';
 function SectionOne() {
     useEffect(() => {
         var scroll = window.requestAnimationFrame ||
@@ -116,6 +117,17 @@ function SectionOne() {
                 </article>
             </main>
 
+            <Box sx={{ mt: 5 }}>
+                <div className="sections section2" id="solutions" style={{ padding: 0, margin: 0 }}>
+                    <div className="flex" style={{ padding: 0, margin: 0 }}>
+                        <section className="flex-content padding_1x" style={{ padding: 0, margin: 0, marginLeft: 8 }}>
+                            <em className="line inline-photo2 show-on-scroll2"></em>
+                            <h1 className="title medium inline-photo3 show-on-scroll3"><em>Recent</em> Products</h1>
+                        </section>
+                    </div>
+                    <LandingPageCarousel />
+                </div>
+            </Box>
 
             <div className="sections section1 flex" id="about">
                 <section className="flex-content padding_2x">
