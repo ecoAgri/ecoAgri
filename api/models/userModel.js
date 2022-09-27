@@ -37,21 +37,6 @@ const Users = db.define(
     registerNo: {
       type: DataTypes.STRING,
     },
-    charityFileLocation: {
-      type: DataTypes.STRING,
-    },
-    isAccept: {
-      type: DataTypes.BOOLEAN, //user is charity organizer then default value should be false.. then moderator accept the request then this value updated.
-      defaultValue: true,
-    },
-    isActivate: {
-      type: DataTypes.BOOLEAN, //admin can be ban this member
-      defaultValue: true,
-    },
-    isDonate: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     refresh_token: {
       type: DataTypes.TEXT,
     },
