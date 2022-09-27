@@ -18,46 +18,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreVert';
-
-const messages = [
-    {
-        id: 1,
-        personName: 'Pasindu Lakmal',
-        lastMessage: "I want to get details about your product",
-        person: '/static/images/avatar/5.jpg',
-    },
-    {
-        id: 2,
-        personName: 'Piruna',
-        lastMessage: `I want to know something about how to grow`,
-        person: '/static/images/avatar/1.jpg',
-    },
-    {
-        id: 3,
-        personName: 'Supun Bhanuka',
-        lastMessage: 'I want to get details about your product',
-        person: '/static/images/avatar/2.jpg',
-    },
-    {
-        id: 4,
-        personName: 'Lahiru',
-        lastMessage: 'Can I get a donation please',
-        person: '/static/images/avatar/3.jpg',
-    },
-    {
-        id: 5,
-        personName: "Saman Perera",
-        lastMessage: 'Can I get a donation please',
-        person: '/static/images/avatar/4.jpg',
-    },
-    {
-        id: 6,
-        personName: 'Dilshan Ratnayake',
-        lastMessage: `I want to get details about your product`,
-        person: '/static/images/avatar/5.jpg',
-    },
-];
-
+import { alpha, Autocomplete, Divider, InputBase, TextField } from '@mui/material';
+import Test from './Test';
+import ContactList from './ContactList';
 const StyledFab = styled(Fab)({
     position: 'absolute',
     zIndex: 1,
@@ -84,48 +47,187 @@ const theme = createTheme({
         fontWeightBold: 700,
     },
 });
+
+
+const messages = [
+    {
+        id: 1,
+        label: 'Bhanuka Rajapaksha',
+        secondary: "Are you ...",
+        person: 'images/tutors/tutor-2.png',
+    },
+    {
+        id: 2,
+        label: 'Jonny perera',
+        secondary: "Are you ...",
+        person: 'images/tutors/tutor-3.png',
+    },
+    {
+        id: 3,
+        label: 'Melaka Pathirangama',
+        secondary: 'Are you ...',
+        person: 'images/tutors/tutor-1.png',
+    },
+    {
+        id: 4,
+        label: 'Lahiru wije',
+        secondary: 'Are you ...',
+        person: 'images/tutors/tutor-2.png',
+    },
+    {
+        id: 5,
+        label: 'Akila Perera',
+        secondary: 'Are you ...',
+        person: 'images/tutors/tutor-3.png',
+    },
+    {
+        id: 6,
+        label: 'Akila Perera',
+        secondary: 'Are you ...',
+        person: 'images/tutors/tutor-3.png',
+    },
+];
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    height: '45px',
+    borderLeft: '2px #ffffff solid',
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    // [theme.breakpoints.up('sm')]: {
+    //     marginLeft: theme.spacing(1),
+    //     width: 'auto',
+    // },
+}));
+
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    height: '45px',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        // [theme.breakpoints.up('sm')]: {
+        //     width: '14ch',
+        //     '&:focus': {
+        //         width: '25.4ch',
+        //         backgroundColor: '#F4F4F4',
+        //     },
+        // },
+    },
+}));
+
 export default function ChatList(props) {
-    
+
     const [active, setActive] = React.useState(-1);
     const selectItem = (id, name) => {
         setActive(id)
+        props.onClick();
         { props.setSelectContactdetails((obj) => ({ ...obj, value1: id, value2: name })) }
     }
+
+    const [searchItem, setSearchItem] = React.useState('')
+    const searchHandler = (e) => {
+        setSearchItem(e.target.value)
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Paper square sx={{ pb: '50px', height: "400px", overflowY: "auto" }}>
-                <Typography variant="h5" gutterBottom component="div" sx={{ p: 2, pb: 0 }}>
-                    Inbox
-                </Typography>
-                <List sx={{ mb: 2 }}>
-                    {messages.map(({ id, personName, lastMessage, person }) => (
-                        <React.Fragment key={id}>
-                            <ListItem button onClick={props.onClick}>
-                                <ListItemAvatar>
-                                    <Avatar alt="Profile Picture" src={person} />
-                                </ListItemAvatar>
-                                <ListItemText primary={personName} secondary={lastMessage} />
-                            </ListItem>
-                        </React.Fragment>
-                    ))}
-                </List>
+                <Box>
+                    <Autocomplete
+                        onSelect={searchHandler}
+                        freeSolo
+                        id="free-solo-2-demo"
+                        disableClearable
+                        options={messages.map((option) => option.label)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                placeholder="Search users"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    type: 'search',
+                                }}
+                            />
+                        )}
+                    />
+                    {/* <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon sx={{ color: 'grey.400', }} />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search messages ..."
+                            inputProps={{ 'aria-label': 'search' }}
+                            onChange={searchHandler}
+                        />
+                    </Search> */}
+                </Box>
+                <Box sx={{
+                    overflow: "hidden",
+                }}>
+                    <List sx={{ mb: 2 }}>
+                        {searchItem === "" && (
+                            messages.map(({ id, label, secondary, person }) => (
+                                <React.Fragment key={id} >
+                                    <ListItem
+                                        button
+                                        style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                                        onClick={() => selectItem(id, label)}
+                                    >
+                                        <ListItemAvatar>
+                                            <Avatar alt="Profile Picture" src={person} />
+                                        </ListItemAvatar>
+                                        <ListItemText primary={label} secondary={secondary} />
+                                    </ListItem>
+                                    <Divider />
+                                </React.Fragment>
+                            )
+                            ))}
+                        {searchItem !== "" && (
+                            messages.map(({ id, label, secondary, person }) => {
+                                return (
+                                    searchItem === label &&
+                                    <React.Fragment key={id} >
+                                        <ListItem
+                                            button
+                                            style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                                            onClick={() => selectItem(id, label)}
+                                        >
+                                            <ListItemAvatar>
+                                                <Avatar alt="Profile Picture" src={person} />
+                                            </ListItemAvatar>
+                                            <ListItemText primary={label} secondary={secondary} />
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                )
+                            }))}
+                    </List>
+                </Box>
             </Paper>
             <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
                 <Toolbar>
-                    <IconButton color="inherit" aria-label="open drawer">
-                        <MenuIcon />
-                    </IconButton>
-                    <StyledFab color="secondary" aria-label="add">
-                        <AddIcon />
-                    </StyledFab>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <IconButton color="inherit">
-                        <SearchIcon />
-                    </IconButton>
-                    <IconButton color="inherit">
-                        <MoreIcon />
-                    </IconButton>
+                    <ContactList onSelect={props.onClick} setSelectContactdetails={props.setSelectContactdetails} />
                 </Toolbar>
             </AppBar>
         </ThemeProvider>
