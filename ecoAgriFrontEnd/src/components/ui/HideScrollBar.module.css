@@ -1,0 +1,27 @@
+.wall-container {
+  box-sizing: initial;
+  width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: stretch;
+  background-color: rgb(242, 250, 255);
+}
+
+.wall-container-out {
+  background-color: rgb(242, 250, 255);
+}
+
+.hideScrollBox {
+  height: 88vh;
+  overflow-y: scroll;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hideScrollBox::-webkit-scrollbar {
+  display: none;
+}
+
+.hideScrollBox {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
