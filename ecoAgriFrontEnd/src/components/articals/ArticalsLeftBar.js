@@ -5,6 +5,7 @@ import RecentPosts from './RecentPosts'
 import SearchBar from '../ui/Searchbar'
 import PostCategories from './PostCategories'
 import AddPostButton from './AddPostButton'
+import { useSelector } from 'react-redux'
 
 const style = {
     boxShadow: 5,
@@ -14,6 +15,8 @@ const style = {
 }
 
 function ArticalsLeftBar() {
+    const user = useSelector((state) => state.user.currentUser);
+    const userType = user.userrole;
     return (
         <React.Fragment>
             <Grid container spacing={4}>
@@ -27,11 +30,13 @@ function ArticalsLeftBar() {
                         <RecentPosts />
                     </Box>
                 </Grid>
-                <Grid item xs={12}>
-                    <Box sx={style}>
-                        <AddPostButton />
-                    </Box>
-                </Grid>
+                {userType !== "Moderator" &&
+                    <Grid item xs={12}>
+                        <Box sx={style}>
+                            <AddPostButton />
+                        </Box>
+                    </Grid>
+                }
                 {/* <Grid item xs={12}>
                     <Box sx={style}>
                         <PostCategories />
