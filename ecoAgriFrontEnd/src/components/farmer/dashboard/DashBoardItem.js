@@ -1,9 +1,6 @@
-import { Button, Grid, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
-import { useNavigate } from 'react-router'
-import DonationPendingTable from './DonationPendingTable'
-import MainHeader from '../../layouts/MainHeader'
 import CenteredBox from '../../ui/CenteredBox'
 
 const style = {
@@ -24,13 +21,13 @@ function DashBoardItem(props) {
   return (
     <React.Fragment>
       <Box sx={style}>
-        <CenteredBox align="center">
+        <CenteredBox align="left">
           <Typography sx={{mb: 2}} variant="h5">{props.tableName}</Typography>
         </CenteredBox>
-        <CenteredBox align="center">
+        {/* <CenteredBox align="center"> */}
             {props.table}
           {/* <Button onClick={clickHanlder} variant="contained" sx={{ textTransform: "none", mb: 2 }}>Donate</Button> */}
-        </CenteredBox>
+        {/* </CenteredBox> */}
       </Box>
     </React.Fragment>
   )
