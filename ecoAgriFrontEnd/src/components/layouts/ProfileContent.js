@@ -20,24 +20,19 @@ const style = {
     // pr: 0,
 }
 function ProfileContent() {
+
     return (
         <div>
-            <Grid container>
-                <Grid>
-                    <div>
-                        <Grid container>
-                            <Grid item sm={12} md={5}>
-                                <CenteredBox align="center">
-                                    <IconButton>
-                                        <Avatar sx={{ width: 200, height: 200 }} />
-                                    </IconButton>
-                                </CenteredBox>
-                            </Grid>
-                            <Grid item sm={12} md={7}>
-                                <ProfileDetails />
-                            </Grid>
-                        </Grid>
-                    </div>
+            <Grid container spacing={5}>
+                <Grid item sm={12} md={5}>
+                    <CenteredBox align="center">
+                        <IconButton>
+                            <Avatar sx={{ width: 200, height: 200 }} />
+                        </IconButton>
+                    </CenteredBox>
+                </Grid>
+                <Grid item sm={12} md={7}>
+                    <ProfileDetails />
                 </Grid>
             </Grid>
         </div>

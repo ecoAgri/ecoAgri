@@ -46,7 +46,6 @@ export default function MainTab(props) {
 
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
-    console.log(userType);
     return (
         <ThemeProvider theme={theme}>
             {userType === "Farmer" &&
@@ -60,7 +59,7 @@ export default function MainTab(props) {
                         sx={{ minWidth: 0, p: 0 }}
                         value={0}
                         component={Link}
-                        to={"/dashboard"}
+                        to={"/farmer/dashboard"}
                         label={<Button style={{ textTransform: "none" }} variant={props.value === 0 ? "contained" : ""}>Home</Button>}
                     />
                     <Tab
@@ -88,7 +87,7 @@ export default function MainTab(props) {
                         sx={{ minWidth: 0 }}
                         value={4}
                         component={Link}
-                        to={"/profile"}
+                        to={"/farmer/profile"}
                         icon={<Avatar></Avatar>}
                     />
                 </Tabs>
@@ -104,35 +103,14 @@ export default function MainTab(props) {
                         sx={{ minWidth: 0, p: 0 }}
                         value={0}
                         component={Link}
-                        to={"/dashboard"}
+                        to={"/buyer/dashboard"}
                         label={<Button style={{ textTransform: "none" }} variant={props.value === 0 ? "contained" : ""}>Home</Button>}
                     />
                     <Tab
-                        sx={{ minWidth: 0, p: 0 }}
+                        sx={{ minWidth: 0 }}
                         value={1}
                         component={Link}
-                        to={"/sell"}
-                        label={<Button style={{ textTransform: "none" }} variant={props.value === 1 ? "contained" : ""}>Sell</Button>}
-                    />
-                    <Tab
-                        sx={{ minWidth: 0, p: 0 }}
-                        value={2}
-                        component={Link}
-                        to={"/buy"}
-                        label={<Button style={{ textTransform: "none" }} variant={props.value === 2 ? "contained" : ""}>Buy</Button>}
-                    />
-                    <Tab
-                        sx={{ minWidth: 0, p: 0 }}
-                        value={3}
-                        component={Link}
-                        to={"/donate"}
-                        label={<Button style={{ textTransform: "none" }} variant={props.value === 3 ? "contained" : ""}>Donate</Button>}
-                    />
-                    <Tab
-                        sx={{ minWidth: 0 }}
-                        value={4}
-                        component={Link}
-                        to={"/profile"}
+                        to={"/buyer/profile"}
                         icon={<Avatar></Avatar>}
                     />
                 </Tabs>
