@@ -1,8 +1,12 @@
+import { Grid } from '@mui/material'
 import React from 'react'
+import Buy from '../Buy'
 
 function Dashboard() {
   return (
-    <div>Dashboard</div>
+    <React.Fragment>
+      <Buy />
+    </React.Fragment>
   )
 }
 
