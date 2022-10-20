@@ -22,7 +22,7 @@ function AddSaleProduct() {
                 </Grid>
                 <Grid item xs={12} sx={{ mx: 10, bgcolor: "#fff" }}>
                     <CenteredBox align="center">
-                        <AddProductForm productType="donateProduct" />
+                        <AddProductForm width="500px" padding={4} productType="donateProduct" />
                     </CenteredBox>
                 </Grid>
             </Grid>
