@@ -15,7 +15,7 @@ function SlideBarBox(props) {
         navigate(props.link)
     }
     return (
-        <Button onClick={redirectHandler} variant="contained" sx={{ width: "120px", height: "120px", p: 2, position: 'relative', textTransform: "none" }}>
+        <Button component="div" onClick={redirectHandler} variant="contained" sx={{ width: "120px", height: "120px", p: 2, position: 'relative', textTransform: "none" }}>
             <div style={style}>
                 <CenteredBox align="center">
                     <Typography>{props.number}</Typography>
