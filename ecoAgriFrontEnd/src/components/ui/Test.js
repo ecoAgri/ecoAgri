@@ -1,112 +1,62 @@
-import * as React from 'react';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import ImageListItemBar from '@mui/material/ImageListItemBar';
-import Grid from '@mui/material/Grid';
-import ListSubheader from '@mui/material/ListSubheader';
-import IconButton from '@mui/material/IconButton';
-import InfoIcon from '@mui/icons-material/Info';
-import CenteredBox from './CenteredBox';
-import { Typography } from '@mui/material';
+import { Box } from "@mui/system";
+import React, { Component } from "react";
+import Slider from "react-slick";
 
-export default function Test() {
-    return (
-        <Grid container spacing={2}>
-            {itemData.map((item) => (
-                <Grid item xs={3} key={item.img}>
-                    <ImageListItem>
-                        <img
-                            src={`${item.img}?w=248&fit=crop&auto=format`}
-                            srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                            alt={item.title}
-                            loading="lazy"
-                            style={{height: "220px"}}
-                        />
-                        <ImageListItemBar
-                            title={item.title}
-                            subtitle={item.author}
-                        />
-                    </ImageListItem>
-                </Grid>
-            ))}
-        </Grid>
-    );
+export default class AsNavFor extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            nav1: null,
+            nav2: null
+        };
+    }
+
+    componentDidMount() {
+        this.setState({
+            nav1: this.slider1,
+            nav2: this.slider2
+        });
+    }
+
+    images = [
+        "https://images.unsplash.com/photo-1603833665858-e61d17a86224?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=327&q=80",
+        "https://images.unsplash.com/photo-1550828520-4cb496926fc9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1333&q=80",
+        "https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80",
+    ]
+    render() {
+        return (
+            <div>
+                <Box sx={{ width: "300px" }}>
+                    <Slider
+                        asNavFor={this.state.nav1}
+                        ref={slider => (this.slider2 = slider)}
+                        slidesToShow={3}
+                        swipeToSlide={true}
+                        focusOnSelect={true}
+                    >
+                        {this.images.map((image) => (
+                            <Box sx={{ width: "100px", height: "100px" }}>
+                                <div>
+                                    <img src={image} />
+                                </div>
+                            </Box>
+                        ))}
+                    </Slider>
+                </Box>
+                <Box sx={{ mt: 3, width: "600px", height: "400px",}}>
+                    <Slider
+                        asNavFor={this.state.nav2}
+                        ref={slider => (this.slider1 = slider)}
+                    >
+                        {this.images.map((image) => (
+                            <div>
+                                <img style={{ width: "100%" }} src={image} />
+                            </div>
+                        ))}
+                    </Slider>
+                </Box>
+
+            </div>
+        );
+    }
 }
-
-const itemData = [
-    {
-        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-        title: 'Breakfast',
-        author: <Grid container>
-            <Grid item xs={8}>
-                <Typography variant="body2">
-                    Rs. 300
-                </Typography>
-            </Grid>
-            <Grid item xs={4}>
-                <CenteredBox align="right">
-                    <Typography variant="body2">
-                        2kg
-                    </Typography>
-                </CenteredBox>
-            </Grid>
-        </Grid>,
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-        title: 'Burger',
-        author: '@rollelflex_graphy726',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-        title: 'Camera',
-        author: '@helloimnik',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-        title: 'Coffee',
-        author: '@nolanissac',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-        title: 'Hats',
-        author: '@hjrc33',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-        title: 'Honey',
-        author: '@arwinneil',
-
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-        title: 'Basketball',
-        author: '@tjdragotta',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-        title: 'Fern',
-        author: '@katie_wasserman',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-        title: 'Mushrooms',
-        author: '@silverdalex',
-
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-        title: 'Tomato basil',
-        author: '@shelleypauls',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-        title: 'Sea star',
-        author: '@peterlaster',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-        title: 'Bike',
-        author: '@southside_customs',
-    },
-];
