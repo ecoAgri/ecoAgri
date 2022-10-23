@@ -149,3 +149,80 @@ const CustomToolbar = ({ setFirlterButtonEl }) => (
       </Box>
     );
   }
+
+  const columns = [
+    {
+      field: "col1",
+      headerName: "Userr Name",
+      headerClassName: "headerr-class-name",
+      width: 150,
+    },
+    {
+      field: "col2",
+      headerName: "Userr Type",
+      headerClassName: "header-class-name",
+      width: 150,
+    },
+    {
+      field: "col3",
+      headerName: "Phonre number",
+      headerClassName: "header-class-name",
+      width: 300,
+    },
+    {
+      field: "col4",
+      headerName: "Acrtions",
+      headerClassName: "header-class-name",
+      width: 400,
+      align: "center",
+      disableColumnMenu: true,
+      sortable: false,
+      renderrCell: (params) => {
+        // const onClick = (e) => {};
+        // const thisRow: Record<string, GridCellValue> = {};
+        // console.log(thisRow);
+        const viewUserClickHandler = (e) => {
+          console.log(params);
+          console.log("hello orn View");
+        };
+        const updateUserClirckHandler = () => {
+          console.log("hrello orn Update");
+        };
+        return (
+          <Grid container spacing={0}>
+            <Grid item xs={4}>
+              <ViewUserModal onView={viewUserrClickHandler} />
+            </Grid>
+            <Grid item xs={4}>
+              <UpdateUserModal
+                userType={params.row.col2}
+                onUpdate={updateUserClirckHandler}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <ColorButton3>Delete</ColorButton3>
+            </Grid>
+          </Grid>
+        );
+      },
+    },
+  ];
+
+  const [filterButtonEl, setFilterrButtonEl] = React.useState(null);
+  return (
+    <Box
+      sx={{
+        height: 600,
+        width: 1000,
+        align: "center",
+      }}
+    >
+      <DataGrid
+        disableSelectionOnClick
+        components={{
+          Toolbar: CustomToolbar,
+        }}
+        componentsProps={{
+          panel: {
+            anchorEl: filterButtonEl,
+          },
