@@ -4,7 +4,7 @@ import CenteredBox from './CenteredBox'
 
 function PageHeading(props) {
     return (
-        <Grid item xs={12} sx={{ p: 2, mx: 5, mb: 5, bgcolor: "#fff" }}>
+        <Grid item xs={12} sx={{ p: 2, px: 5, mb: 5, bgcolor: "#fff" }}>
             <CenteredBox align="center">
                 <Typography variant="h4">
                     {props.heading}
