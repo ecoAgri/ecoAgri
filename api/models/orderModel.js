@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
-import Users from './userModel.js';
+import Users from "./userModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -20,6 +20,10 @@ const Orders = db.define(
       defaultValue: 0,
     },
     unitPrice: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    totalPrice: {
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },
@@ -49,6 +53,34 @@ const Orders = db.define(
     isDonate: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    productName: {
+      type: DataTypes.STRING,
+    },
+    productCategory: {
+      type: DataTypes.STRING,
+    },
+    location: {
+      type: DataTypes.STRING,
+    },
+    priceUOM: {
+      type: DataTypes.STRING,
+    },
+    weightUOM: {
+      type: DataTypes.STRING,
+    },
+    sellerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    sellerName: {
+      type: DataTypes.STRING,
+    },
+    username: {
+      type: DataTypes.STRING,
+    },
+    sellerContact: {
+      type: DataTypes.STRING,
     },
   },
   {
