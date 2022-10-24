@@ -1246,3 +1246,270 @@ const Articles = db.define(
     freezeTableName: true,
   }
 );
+(async () => {
+  await db
+    .sync()
+    .then(() => {
+      console.log("Table created");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+})();
+
+export default Articles;
+import { Sequelize } from "sequelize";
+import db from "../config/database.js";
+import Users from "./userModel.js";
+
+const { DataTypes } = Sequelize;
+
+const Orders = db.define(
+  "orders",
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    productId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    fieldAddress: {
+      type: DataTypes.STRING,
+    },
+    manuDate: {
+      type: DataTypes.DATEONLY,
+    },
+    expireDate: {
+      type: DataTypes.DATEONLY,
+    },
+    status: {
+      type: DataTypes.STRING,
+    },
+    isAccept: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    createDate: {
+      type: DataTypes.DATEONLY,
+      defaultValue: DataTypes.NOW,
+    },
+    location: {
+      type: DataTypes.STRING,
+    },
+    isDonate: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  },
+  {
+    freezeTableName: true,
+    // include: Users
+  }
+);
+// Orders.belongsTo(Users);
+
+(async () => {
+  await db
+    .sync()
+    .then(() => {
+      console.log("Table created");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+})();
+
+export default Orders;
+import { Sequelize } from "sequelize";
+import db from "../config/database.js";
+import Products from "./productsModel.js";
+
+const { DataTypes } = Sequelize;
+
+const ProductImage = db.define(
+  "productImage",
+  {
+    productImages: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      //   defaultValue: DataTypes.UUIDV4
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+
+// ProductImage.belongsTo(Products);
+// products.belongsToMany(productImage, { through: 'ProductProductImage' });
+
+(async () => {
+  await db.sync();
+})();
+
+export default ProductImage;
+import { Sequelize } from "sequelize";
+import db from "../config/database.js";
+import ProductImage from "./productImagesModel.js";
+
+const { DataTypes } = Sequelize;
+
+const Products = db.define(
+  "products",
+  {
+    productName: {
+      type: DataTypes.STRING,
+    },
+    productCategory: {
+      type: DataTypes.STRING,
+    },
+    weight: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    fieldAddress: {
+      type: DataTypes.STRING,
+    },
+    manuDate: {
+      type: DataTypes.DATEONLY,
+    },
+    expireDate: {
+      type: DataTypes.DATEONLY,
+    },
+    status: {
+      type: DataTypes.STRING,
+    },
+    isAccept: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    createDate: {
+      type: DataTypes.DATEONLY,
+      defaultValue: DataTypes.NOW,
+    },
+    location: {
+      type: DataTypes.STRING,
+    },
+    isDonate: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    image1: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    image2: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    image3: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    image4: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+
+// Products.hasMany(ProductImage);
+// products.belongsToMany(productImage, { through: 'ProductProductImage' });
+
+(async () => {
+  await db
+    .sync()
+    .then(() => {
+      console.log("Table created");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+})();
+
+export default Products;
+import { Sequelize } from "sequelize";
+import db from "../config/database.js";
+
+const { DataTypes } = Sequelize;
+
+const Users = db.define(
+  "users",
+  {
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+    },
+    password: {
+      type: DataTypes.STRING,
+    },
+    userrole: {
+      type: DataTypes.STRING,
+    },
+    phone_number: {
+      type: DataTypes.STRING,
+    },
+    address: {
+      type: DataTypes.STRING,
+    },
+    city: {
+      type: DataTypes.STRING,
+    },
+    town: {
+      type: DataTypes.STRING,
+    },
+    img: {
+      type: DataTypes.STRING,
+    },
+    registerNo: {
+      type: DataTypes.STRING,
+    },
+    charityFileLocation: {
+      type: DataTypes.STRING,
+    },
+    isAccept: {
+      type: DataTypes.BOOLEAN, //user is charity organizer then default value should be false.. then moderator accept the request then this value updated.
+      defaultValue: true,
+    },
+    isActivate: {
+      type: DataTypes.BOOLEAN, //admin can be ban this member
+      defaultValue: true,
+    },
+    isDonate: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    refresh_token: {
+      type: DataTypes.TEXT,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+
+(async () => {
+  await db.sync();
+})();
+
+export default Users;
