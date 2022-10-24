@@ -44,35 +44,9 @@ const Products = db.define(
     location: {
       type: DataTypes.STRING,
     },
-    latitude: {
-      type: DataTypes.STRING,
-    },
-    longitude: {
-      type: DataTypes.STRING,
-    },
     isDonate: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    },
-    priceUOM: {
-      type:DataTypes.STRING,
-      allowNull: true
-    },
-    sellerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    sellerName: {
-      type:DataTypes.STRING,
-      allowNull: false
-    },
-    sellerContact: {
-      type:DataTypes.STRING,
-      allowNull: false
-    },
-    weightUOM: {
-      type:DataTypes.STRING,
-      allowNull: true
     },
     image1: {
       type:DataTypes.STRING,

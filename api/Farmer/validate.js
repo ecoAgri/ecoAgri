@@ -13,5 +13,3 @@ export function validate(req, res, next) {
     next();
   }
 }
-
-//ane mnda ithin mnwa ghannda kyla
