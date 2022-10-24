@@ -7305,18 +7305,3 @@ const Products = db.define(
         freezeTableName: true,
     }
 );
-
-// Products.hasMany(ProductImage);
-// products.belongsToMany(productImage, { through: 'ProductProductImage' });
-
-(async () => {
-    await db
-        .sync()
-        .then(() => {
-            console.log("Table created");
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-})();
-
