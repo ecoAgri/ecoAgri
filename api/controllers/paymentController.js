@@ -1,5 +1,26 @@
 import Payments from "../models/paymentModel.js";
 
+export const paymentIntent = async (req, res) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: req.body.amount, //lowest denomination of particular currency
+      currency: req.body.currency,
+      payment_method_types: ["card"], //by default
+    });
+
+    
+    const clientSecret = paymentIntent.client_secret;
+    // console.log(clientSecret);
+
+    res.json({
+      clientSecret: clientSecret,
+    });
+  } catch (e) {
+    console.log(e.message);
+    res.json({ error: e.message });
+  }
+};
+
 //Payment SAVE
 export const savePayment = async (req, res) => {
   try {

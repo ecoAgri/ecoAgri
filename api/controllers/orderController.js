@@ -20,11 +20,7 @@ export const getOrders = async (req, res) => {
     //     include: Users
     //   }
     // );
-    const orders = await Orders.findAll(
-      {
-        include: Users
-      }
-    );
+    const orders = await Orders.findAll();
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json(error);
@@ -48,6 +44,11 @@ export const getOrder = async (req, res) => {
 // UPDATE
 export const updateOrder = async (req, res) => {
   try {
+    const order_update = await Orders.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+    });
     const orders = await Orders.findOne({
       where: {
         id: req.params.id,
