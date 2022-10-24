@@ -79,16 +79,31 @@ export const getProduct = async (req, res) => {
 // UPDATE
 export const updateProduct = async (req, res) => {
   try {
-    const product_update = await Products.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
-    });
+    // const product_update = await Products.update(
+    //   {
+    //     address: "466",
+    //   },
+    //   {
+    //     where: {
+    //       id: req.params.id,
+    //     },
+    //   }
+    // );
     const products = await Products.findOne({
       where: {
         id: req.params.id,
       },
     });
+    // const users = await Users.findOrCreate(
+    //   {
+    //     where: {
+    //       id: req.params.id,
+    //     },
+    //     defaults: {
+    //       address: 'Technical Lead JavaScript'
+    //     }
+    //   }
+    // );
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json(error);

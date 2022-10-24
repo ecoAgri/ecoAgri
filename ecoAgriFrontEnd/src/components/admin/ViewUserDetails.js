@@ -3,29 +3,28 @@ import React from 'react'
 import BankDetailField from '../farmer/sell/BankDetailField'
 
 function ViewUserDetails(props) {
-    console.log(props.data);
     return (
         <Grid container sx={{pr: 3}} spacing={3}>
             <Grid item xs={12}>
-                <BankDetailField fieldName="User Name" userDetail={props.data.col1} />
+                <BankDetailField fieldName="User Name" userDetail="Pasindu Lakmal" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="User Type" userDetail={props.data.col2} />
+                <BankDetailField fieldName="User Type" userDetail="Farmer" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="Phone Number" userDetail={props.data.phoneNumber} />
+                <BankDetailField fieldName="Phone Number" userDetail="1234567890" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="Email" userDetail={props.data.col3} />
+                <BankDetailField fieldName="Email" userDetail="pasindu.lakmal@gmail.com" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="Address" userDetail={props.data.address} />
+                <BankDetailField fieldName="Address" userDetail="Galle" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="City" userDetail={props.data.city} />
+                <BankDetailField fieldName="City" userDetail="Galle" />
             </Grid>
             <Grid item xs={12}>
-                <BankDetailField fieldName="Town" userDetail={props.data.town} />
+                <BankDetailField fieldName="Town" userDetail="Walhanduwa" />
             </Grid>
         </Grid>
     )

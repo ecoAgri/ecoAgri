@@ -60,7 +60,7 @@ export default function UpdateUserModal(props) {
                     </CenteredBox>
                     <Grid container sx={{ pr: 3 }}>
                         <Grid item xs={12}>
-                            <UpdateUserForm userType={props.userType} data={props.data} />
+                            <UpdateUserForm userType={props.userType} />
                         </Grid>
                     </Grid>
 

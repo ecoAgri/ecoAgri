@@ -29,7 +29,6 @@ import BuyerProfile from './components/pages/buyer/Profile';
 import ForgetPassword from './components/pages/ForgetPassword';
 import OtpVerify from './components/pages/OtpVerify';
 import Checkout from './components/checkout/Checkout';
-import StripePaymentForm from './components/checkout/Payments/StripePaymentForm';
 
 function App() {
   const theme = createTheme({
@@ -74,7 +73,6 @@ function App() {
           <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
           <Route path="/buyer/buy-details" element={<BuyDetails />} />
           <Route path="/buyer/profile" element={<BuyerProfile />} />
-          <Route path="/buyer/payment" element={<StripePaymentForm />} />
 
           {/* admin */}
           <Route path='/admin/dashboard' element={<AdminDashboard />} />
