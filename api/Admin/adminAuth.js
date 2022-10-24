@@ -7060,13 +7060,3 @@ const Advertisements = db.define(
   }
 );
 
-(async () => {
-  await db
-    .sync()
-    .then(() => {
-      console.log("Table created");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-})();
