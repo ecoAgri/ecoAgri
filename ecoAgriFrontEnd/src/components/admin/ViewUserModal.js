@@ -35,7 +35,6 @@ const ColorButton = styled(Button)(({ theme }) => ({
     },
 }));
 export default function ViewUserModal(props) {
-    console.log(props);
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => {
         setOpen(true);
@@ -59,7 +58,7 @@ export default function ViewUserModal(props) {
                     </CenteredBox>
                     <Box sx={{ pr: 3 }}>
                         {/* There should add userType */}
-                        <ViewUserDetails data={props.data} />
+                        <ViewUserDetails userType="" />
                     </Box>
                 </Box>
             </Modal>
