@@ -10,8 +10,8 @@ import { Grid } from "@mui/material";
 
 export const MessageRight = (props) => {
     const message = props.message ? props.message : "no message";
-    const timestamp = props.timestamp ? props.timestamp : "";
-    const displayName = props.displayName ? props.displayName : "Ashani";
+    // const timestamp = props.timestamp ? props.timestamp : "";
+    // const displayName = props.displayName ? props.displayName : "Ashani";
     return (
         <StyledEngineProvider injectFirst>
             <List >
@@ -20,9 +20,9 @@ export const MessageRight = (props) => {
                         <Grid item xs={12}>
                             <ListItemText align="right" primary={message}></ListItemText>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <ListItemText align="right" secondary={timestamp}></ListItemText>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                 </ListItem>
             </List>
@@ -32,7 +32,7 @@ export const MessageRight = (props) => {
 
 export const MessageLeft = (props) => {
     const message = props.message ? props.message : "no message";
-    const timestamp = props.timestamp ? props.timestamp : "";
+    // const timestamp = props.timestamp ? props.timestamp : "";
     return (
         <>
             <List >
@@ -41,9 +41,9 @@ export const MessageLeft = (props) => {
                         <Grid item xs={12}>
                             <ListItemText align="left"  primary={message} ></ListItemText>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <ListItemText align="left" secondary={timestamp}></ListItemText>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                 </ListItem>
             </List>
