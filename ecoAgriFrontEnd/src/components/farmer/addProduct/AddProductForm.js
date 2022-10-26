@@ -6,22 +6,29 @@ import classes from "../../ui/Form.module.css";
 import useInput from "../../../hooks/use-input";
 import { useSelector } from 'react-redux';
 import UploadProduct from './UploadProduct';
-const style = {
-  // position: 'absolute',
-  // top: '50%',
-  // left: '50%',
-  // transform: 'translate(-50%, -50%)',
-  width: 500,
-  // height: 505,
-  bgcolor: 'background.paper',
-  // overflow: "auto",
-  border: "none",
-  // boxShadow: 24,
-  borderRadius: 5,
-  p: 4,
-};
+import SetLocationModal from './SetLocationModal';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import Swal from "sweetalert2";
+import { storage } from '../../../Firebase';
+import { v4 } from "uuid";
+import { async } from '@firebase/util';
+import AddProductContext from '../../../context/AddProduct-context';
 
 function AddProductForm(props) {
+  const style = {
+    // position: 'absolute',
+    // top: '50%',
+    // left: '50%',
+    // transform: 'translate(-50%, -50%)',
+    width: props.width,
+    // height: 505,
+    bgcolor: 'background.paper',
+    // overflow: "auto",
+    border: "none",
+    // boxShadow: 24,
+    borderRadius: 5,
+    p: props.padding,
+  };
   // const [images, setImages] = useState([])
 
   // const setImagesHandler = (value) => {
@@ -29,7 +36,7 @@ function AddProductForm(props) {
   // }
   // const productImages = useSelector((state) => state.imageUpload.images);
   // console.log(productImages);
-  const {
+  let {
     value: productName,
     isValid: productNameIsValid,
     hasError: productNameHasError,
@@ -50,7 +57,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: productCategory,
     isValid: productCategoryIsValid,
     hasError: productCategoryHasError,
@@ -71,7 +78,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: weight,
     isValid: weightIsValid,
     hasError: weightHasError,
@@ -92,7 +99,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: unitPrice,
     isValid: unitPriceIsValid,
     hasError: unitPriceHasError,
@@ -113,7 +120,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: manuDate,
     isValid: manuDateIsValid,
     hasError: manuDateHasError,
@@ -134,7 +141,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: expireDate,
     isValid: expireDateIsValid,
     hasError: expireDateHasError,
@@ -155,7 +162,7 @@ function AddProductForm(props) {
     }
   })
 
-  const {
+  let {
     value: fieldAddress,
     isValid: fieldAddressIsValid,
     hasError: fieldAddressHasError,
@@ -176,175 +183,284 @@ function AddProductForm(props) {
     }
   })
 
-  
+
   const [productImages, setProductImages] = useState([]);
+  const [productImageUrls, setProductImageUrls] = useState([]);
+  const [imageUploadingCount, setImageUploadingCount] = useState([]);
+  console.log(productImages);
   const deleteImageHandler = () => {
     const images = productImages;
     setProductImages(images);
     console.log("deleted")
   }
 
+  const [liveLocation, setLiveLocation] = useState(null);
+  console.log(liveLocation);
   let formIsValid = false;
-  
-  if (productNameIsValid && productCategoryIsValid && weightIsValid && unitPriceIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "sellProduct")) {
+
+  if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && unitPriceIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "sellProduct")) {
+    formIsValid = true;
+  } else if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "donateProduct")) {
     formIsValid = true;
   }
-  console.log(productImages);
-  if ((productImages.length !== 0) && (props.productType === "donateProduct")) {
-    formIsValid = true;
+
+  if (props.productName !== undefined) {
+    productName = props.productName;
   }
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
+  if (props.productCategory !== undefined) {
+    productCategory = props.productCategory;
+  }
+  if (props.manuDate !== undefined) {
+    manuDate = props.manuDate;
+  }
+  if (props.expireDate !== undefined) {
+    expireDate = props.expireDate;
+  }
+  if (props.fieldAddress !== undefined) {
+    fieldAddress = props.fieldAddress;
+  }
+  if (props.weight !== undefined) {
+    weight = props.weight;
+  }
+
+  const onSubmitHandler = async (e) => {
+    console.log(liveLocation);
+
     if (!formIsValid) {
       return;
     }
-    const data = {
+    e.preventDefault();
+    let imagePath = [];
+    let imageRef = [];
+    let uploadTask = "";
+    let imagUrls = [];
+    console.log(productImages);
+    let count = 0;
+    for (var i = 0; i < productImages.length; i++) {
+      imagePath.push(`images/products/${productImages[i].file.name + v4()}`);
+      imageRef.push(ref(storage, imagePath[i]));
+      uploadTask = uploadBytesResumable(imageRef[i], productImages[i].file);
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Uploading progress is " + progress);
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong !',
+          })
+        },
+        () => {
+          console.log(uploadTask.snapshot);
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              imagUrls.push(downloadURL);
+              setProductImageUrls(imagUrls)
+              console.log(imagUrls);
+            }
+            ).catch((error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong !',
+              })
+            });
+        }
+      )
+      setImageUploadingCount(i + 1)
+    }
 
+    if (imageUploadingCount === productImages.length) {
+      console.log(productImageUrls);
+    }
+
+    const data = {
+      productName: productName,
+      productCategory: productCategory,
+      weight: weight,
+      unitPrice: unitPrice,
+      manuDate: manuDate,
+      expireDate: expireDate,
+      images: productImageUrls.map((image) => {
+        return image
+      }),
+      latitude: liveLocation.lat,
+      longitude: liveLocation.lng,
     };
 
+    // console.log(data);
     //api call here
   }
-
   return (
-    <Box sx={style}>
-      <form onSubmit={onSubmitHandler}>
-        <Grid container sx={{ mb: 3 }}>
-          <Grid item xs={12}>
-            <CenteredBox align="center">
-              <Typography variant="h5">Enter Product Details</Typography>
-            </CenteredBox>
+    <AddProductContext.Provider value={{
+      productImages: productImages,
+      liveLocation: liveLocation,
+      setLiveLocation: setLiveLocation,
+      setProductImages: setProductImages
+    }}>
+      <Box sx={style}>
+        <form onSubmit={onSubmitHandler} noValidate>
+          <Grid container sx={{ mb: 3 }}>
+            <Grid item xs={12}>
+              <CenteredBox align="center">
+                <Typography variant="h5">Enter Product Details</Typography>
+              </CenteredBox>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              label="Product Name"
-              type="text"
-              name="ProductName"
-              value={productName}
-              onChange={productNameChangeHandler}
-              onBlur={productNameBlurHandler}
-              error={productNameHasError}
-              helperText={productNameHasError ? productNameError : ""}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth required error={productCategoryHasError}>
-              <InputLabel>Product Category</InputLabel>
-              <Select
-                label="Product Category"
-                value={productCategory}
-                onChange={productCategoryChangeHandler}
-                onBlur={productCategoryBlurHandler}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={1}>Fruit</MenuItem>
-                <MenuItem value={2}>Vegitable</MenuItem>
-              </Select>
-              <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl variant="outlined" fullWidth required error={weightHasError}>
-              <InputLabel htmlFor="outlined-adornment-password">Weight</InputLabel>
-              <OutlinedInput
-                type="number"
-                value={weight}
-                onChange={weightChangeHandler}
-                onBlur={weightBlurHandler}
-                endAdornment={
-                  <InputAdornment position="end">kg</InputAdornment>
-                }
-                label="Weight"
-              />
-              <FormHelperText>{weightHasError ? weightError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            {props.productType === "sellProduct" &&
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 required
-                label="Unit Price"
-                type="number"
-                name="unitPrice"
-                value={unitPrice}
-                onChange={unitPriceChangeHandler}
-                onBlur={unitPriceBlurHandler}
-                error={unitPriceHasError}
-                helperText={unitPriceHasError ? unitPriceError : ""}
+                label="Product Name"
+                type="text"
+                name="ProductName"
+                value={productName}
+                onChange={productNameChangeHandler}
+                onBlur={productNameBlurHandler}
+                error={productNameHasError}
+                helperText={productNameHasError ? productNameError : ""}
               />
-            }
-          </Grid>
-          <Grid item xs={6}>
-            <InputLabel htmlFor="outlined-adornment-password">Manufacture date*</InputLabel>
-            <FormControl variant="outlined" fullWidth required error={manuDateHasError}>
-              <OutlinedInput
-                type="date"
-                value={manuDate}
-                onChange={manuDateChangeHandler}
-                onBlur={manuDateBlurHandler}
-              // label="Manufacture date"
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth required error={productCategoryHasError}>
+                <InputLabel>Product Category</InputLabel>
+                <Select
+                  label="Product Category"
+                  value={productCategory}
+                  onChange={productCategoryChangeHandler}
+                  onBlur={productCategoryBlurHandler}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={"Fruit"}>Fruit</MenuItem>
+                  <MenuItem value={"Vegetable"}>Vegetable</MenuItem>
+                </Select>
+                <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl variant="outlined" fullWidth required error={weightHasError}>
+                <InputLabel htmlFor="outlined-adornment-password">Weight</InputLabel>
+                <OutlinedInput
+                  type="number"
+                  value={weight}
+                  onChange={weightChangeHandler}
+                  onBlur={weightBlurHandler}
+                  endAdornment={
+                    <InputAdornment position="end">kg</InputAdornment>
+                  }
+                  label="Weight"
+                />
+                <FormHelperText>{weightHasError ? weightError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              {props.productType === "sellProduct" &&
+                <TextField
+                  fullWidth
+                  required
+                  label="Unit Price"
+                  type="number"
+                  name="unitPrice"
+                  value={unitPrice}
+                  onChange={unitPriceChangeHandler}
+                  onBlur={unitPriceBlurHandler}
+                  error={unitPriceHasError}
+                  helperText={unitPriceHasError ? unitPriceError : ""}
+                />
+              }
+            </Grid>
+            <Grid item xs={6}>
+              <InputLabel htmlFor="outlined-adornment-password">Manufacture date*</InputLabel>
+              <FormControl variant="outlined" fullWidth required error={manuDateHasError}>
+                <OutlinedInput
+                  type="date"
+                  value={manuDate}
+                  onChange={manuDateChangeHandler}
+                  onBlur={manuDateBlurHandler}
+                // label="Manufacture date"
+                />
+                <FormHelperText>{manuDateHasError ? manuDateError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <InputLabel htmlFor="outlined-adornment-password">Expire Date*</InputLabel>
+              <FormControl variant="outlined" fullWidth required error={expireDateHasError}>
+                <OutlinedInput
+                  type="date"
+                  value={expireDate}
+                  onChange={expireDateChangeHandler}
+                  onBlur={expireDateBlurHandler}
+                // label="Manufacture date"
+                />
+                <FormHelperText>{expireDateHasError ? expireDateError : ""}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                required
+                label="Field Address"
+                type="text"
+                name="fieldAddress"
+                value={fieldAddress}
+                onChange={fieldAddressChangeHandler}
+                onBlur={fieldAddressBlurHandler}
+                error={fieldAddressHasError}
+                helperText={fieldAddressHasError ? fieldAddressError : ""}
               />
-              <FormHelperText>{manuDateHasError ? manuDateError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <InputLabel htmlFor="outlined-adornment-password">Expire Date*</InputLabel>
-            <FormControl variant="outlined" fullWidth required error={expireDateHasError}>
-              <OutlinedInput
-                type="date"
-                value={expireDate}
-                onChange={expireDateChangeHandler}
-                onBlur={expireDateBlurHandler}
-              // label="Manufacture date"
+            </Grid>
+            <Grid item xs={12}>
+              <div>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    <UploadProduct id={1} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={2} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={3} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <UploadProduct id={4} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                  </Grid>
+                </Grid>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <SetLocationModal onSetLiveLocation={setLiveLocation} />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label={
+                  <p className={classes.text}>
+                    Make sure you have set your product location
+                  </p>
+                }
               />
-              <FormHelperText>{expireDateHasError ? expireDateError : ""}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              label="Field Address"
-              type="text"
-              name="fieldAddress"
-              value={fieldAddress}
-              onChange={fieldAddressChangeHandler}
-              onBlur={fieldAddressBlurHandler}
-              error={fieldAddressHasError}
-              helperText={fieldAddressHasError ? fieldAddressError : ""}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <div>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width/4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width/4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width/4}px`} />
-                </Grid>
-                <Grid item xs={3}>
-                  <UploadProduct images={productImages} onDelete={deleteImageHandler} onImageChange={setProductImages} size={`${style.width/4}px`} />
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <Button fullWidth variant="contained" type="submit" style={{ textTransform: "none" }} disabled={!formIsValid}>Submit</Button>
-          </Grid>
-        </Grid>
-      </form>
-    </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                style={{ textTransform: "none" }}
+                disabled={!formIsValid}
+              >
+                Submit
+              </Button>
+            </Grid>
 
+          </Grid>
+        </form>
+      </Box>
+    </AddProductContext.Provider>
   )
 }
 

@@ -13,6 +13,12 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import imageUploadSlice from "./uploadImage-slice";
+import popularAreaSelectorSlice from "./popularAreaSelector-slice";
+import productReducer from "./productSlice";
+import orderReducer from "./orderSlice";
+import paymentReducer from "./paymentSlice";
+import articleReducer from "./articleSlice";
+import advertisementReducer from "./advertisementSlice";
 
 const persistConfig = {
   key: "root",
@@ -23,7 +29,13 @@ const persistConfig = {
 const rootReducer = combineReducers({
   userTypeSelectorButton: userTypeSelectorButtonSlice.reducer,
   user: userReducer,
-  imageUpload: imageUploadSlice.reducer
+  product: productReducer,
+  order: orderReducer,
+  payment: paymentReducer,
+  advertisement: advertisementReducer,
+  article: articleReducer,
+  imageUpload: imageUploadSlice.reducer,
+  popularArea: popularAreaSelectorSlice.reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
