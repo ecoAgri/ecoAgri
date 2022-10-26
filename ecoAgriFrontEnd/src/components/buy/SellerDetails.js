@@ -2,7 +2,8 @@ import { Avatar, Divider, Grid, ListItem, ListItemAvatar, ListItemText, Rating }
 import React from 'react'
 import BankDetailField from '../farmer/sell/BankDetailField'
 
-function SellerDetails() {
+function SellerDetails(props) {
+    console.log(props.productDetail);
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -13,7 +14,8 @@ function SellerDetails() {
                             src=""
                         />
                     </ListItemAvatar>
-                    <ListItemText primary="Pasindu Lakmal" secondary={<Rating name="read-only" value={3} readOnly />} />
+                    {/* <ListItemText primary={props.productDetail.sellerName} secondary={<Rating name="read-only" value={3} readOnly />} /> */}
+                    <ListItemText primary={props.productDetail.sellerName} />
                 </ListItem>
                 <Divider />
             </Grid>
@@ -23,19 +25,19 @@ function SellerDetails() {
                         <Grid item xs={6}>
                             <BankDetailField
                                 fieldName="Address"
-                                userDetail="48, Perera Mw, Galle"
+                                userDetail={props.productDetail.fieldAddress}
                             />
                         </Grid>
                         <Grid item xs={6}>
                             <BankDetailField
                                 fieldName="Town"
-                                userDetail="Galle"
+                                userDetail={props.productDetail.location}
                             />
                         </Grid>
                         <Grid item xs={6}>
                             <BankDetailField
                                 fieldName="Contact Number"
-                                userDetail="0782346812"
+                                userDetail={props.productDetail.sellerContact}
                             />
                         </Grid>
                     </Grid>
