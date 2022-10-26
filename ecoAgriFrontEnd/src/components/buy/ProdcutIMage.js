@@ -105,8 +105,8 @@ export default function ProdcutIMage(props) {
       >
 
         <ImageSrc style={{
-          width: "100%",
-          height: "100%",
+          // width: "100%",
+          // height: "100%",
           backgroundImage: `url(${props.url})`
         }}
         />
