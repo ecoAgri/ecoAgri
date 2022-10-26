@@ -20,11 +20,11 @@ function ArticalsLeftBar() {
     return (
         <React.Fragment>
             <Grid container spacing={4}>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <Box sx={style}>
-                        <SearchBar />
+                        <SearchBar placeholder="Search articals" />
                     </Box>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     <Box sx={style}>
                         <RecentPosts />
