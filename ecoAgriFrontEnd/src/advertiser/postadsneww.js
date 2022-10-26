@@ -214,7 +214,7 @@ export const createProductReview = (productId, review) => async (
             error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message
-        if (message === '') {
+        if (message === 'ccc') {
             dispatch(logout())
         }
         dispatch({
