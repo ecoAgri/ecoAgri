@@ -20,14 +20,19 @@ import { register } from "../../store/userApiCalls";
 import { useNavigate } from "react-router";
 import useInput from "../../hooks/use-input";
 import FileUploader from "../ui/fileUploader/FileUploader";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { v4 } from "uuid";
+import Swal from "sweetalert2";
+import { storage } from "../../Firebase";
+import BackDrop from "../ui/BackDrop";
 function SignUpForm(props) {
   const [inputs, setInputs] = useState({});
   const [file, setFile] = useState(null);
+  const [isDataUploading, setIsDataUploading] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState(0);
   const setCharityFile = (value) => {
     setFile(value)
   }
-  // const [password, setPassword] = useState(null);
-  // const [confirmPassword, setConfirmPassword] = useState(null);
   const selectedSignupButton = useSelector(
     (state) => state.userTypeSelectorButton.selectedSignupButton
   );
@@ -102,6 +107,15 @@ function SignUpForm(props) {
     }
   })
 
+  //Validate The mobile
+  function phonenumber(inputtxt) {
+    var phoneno = /^\d*(?:\.\d{1,2})?$/;
+    if (inputtxt.match(phoneno)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   const {
     value: phone_number,
     isValid: phone_numberIsValid,
@@ -112,13 +126,11 @@ function SignUpForm(props) {
   } = useInput((value) => {
     if (value.trim() === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
-    }
-    // else if (hasNumber(value.trim())) {
-    //   return { inputIsValid: false, error: "Can't contained numbers !" };
-    // } else if (hasSpecialChars(value.trim())) {
-    //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
-    else {
+    } else if (value.trim().length > 10) {
+      return { inputIsValid: false, error: "More than 10 charcters" };
+    } else if (!phonenumber(value.trim())) {
+      return { inputIsValid: false, error: "Phone number can't include characters" };
+    } else {
       return { inputIsValid: true, error: "" };
     }
   })
@@ -283,21 +295,27 @@ function SignUpForm(props) {
     }
   })
 
+
+  const [checked, setChecked] = useState(false);
+  const signUpAgreeHandler = (event) => {
+    setChecked(event.target.checked);
+  };
+
   let formIsValid = false;
   if (props.userType === "Farmer") {
-    if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+    if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
       formIsValid = true;
     }
   } else if (props.userType === "Buyer") {
-    if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid) {
+    if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
       formIsValid = true;
     }
   } else if (props.userType === "Charity") {
-    if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+    if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
       formIsValid = true;
     }
   } else if (props.userType === "Advertiser" || props.userType === "AgriExpert") {
-    if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+    if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
       formIsValid = true;
     }
   }
@@ -305,6 +323,7 @@ function SignUpForm(props) {
 
   const clickRegister = async (e) => {
     e.preventDefault();
+    setIsDataUploading(true);
     if (!formIsValid) {
       return;
     }
@@ -321,24 +340,71 @@ function SignUpForm(props) {
       confPassword: confirmPassword,
     };
 
-    if (props.userType !== "Charity") {
+    if (props.userType === "Charity") {
+      const filePath = `/signup/charityProof/${file.name + v4()}`
+      const fileRef = ref(storage, filePath);
+
+      const uploadTask = uploadBytesResumable(fileRef, file);
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          switch (snapshot.state) {
+            case 'paused':
+              break;
+            case 'running':
+              break;
+          }
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong !',
+          })
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            data = {
+              ...data,
+              registerNo: "",
+              img: downloadURL,
+              isAccept: false,
+            };
+            setRegistrationResult(register(data))
+          }).catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong !',
+            })
+          });
+          setIsDataUploading(false);
+        }
+      );
+
+    } else {
       data = {
         ...data,
         registerNo: "",
         img: "",
         isAccept: false,
       };
-    } else {
-      //image upload part
+      setIsDataUploading(false);
+      setRegistrationResult(register(data))
     }
-    const result = await register(data);
-    if (result) {
-      navigate("/login");
-    }
-    console.log(data);
   };
+  if (registrationResult) {
+    Swal.fire(
+      'Registration Success!',
+      'You clicked the button!',
+      'success'
+    ).then(() => {
+      navigate("/login");
+    })
+  }
   return (
     <div>
+      <BackDrop dataUploading={isDataUploading} />
       <form onSubmit={clickRegister}>
         <div onClick={backButtonClicked}>
           <GoBackIcon show={selectedSignupButton !== ""} />
@@ -390,9 +456,7 @@ function SignUpForm(props) {
               helperText={lnameHasError ? lnameError : ""}
             />
           </Grid>
-          {/* <Grid item xs={6}>
-            <TextField required variant="standard" label="email" onChange={handleChange} />
-          </Grid> */}
+
         </Grid>
         <Grid container sx={{ mb: 3 }} spacing={3}>
           <Grid item xs={12}>
@@ -403,7 +467,7 @@ function SignUpForm(props) {
               label="Phone number"
               name="phone_number"
               id="phone_number"
-              type="number"
+              type="text"
               value={phone_number}
               onChange={phone_numberChangeHandler}
               onBlur={phone_numberBlurHandler}
@@ -533,7 +597,11 @@ function SignUpForm(props) {
             <React.Fragment>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox defaultChecked />}
+                  control={
+                    <Checkbox
+                      checked={checked}
+                      onChange={signUpAgreeHandler}
+                    />}
                   label={
                     <p className={classes.text}>
                       By signing up, I agree to the{" "}
@@ -555,7 +623,7 @@ function SignUpForm(props) {
                 </Button>
                 <CenteredBox align="center">
                   <p className={classes.text}>
-                    Already have an account? <a style={{cursor: "pointer"}} onClick={() => {navigate("/login")}}>sign in</a>
+                    Already have an account? <a style={{ cursor: "pointer" }} onClick={() => { navigate("/login") }}>sign in</a>
                   </p>
                 </CenteredBox>
               </Grid>
