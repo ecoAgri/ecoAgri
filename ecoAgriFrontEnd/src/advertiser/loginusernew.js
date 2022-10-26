@@ -214,7 +214,7 @@ export const createProductReview = (productId, review) => async (
             error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message
-        if (message === 'hfjjj') {
+        if (message === 'Not authorized, token failed') {
             dispatch(logout())
         }
         dispatch({
