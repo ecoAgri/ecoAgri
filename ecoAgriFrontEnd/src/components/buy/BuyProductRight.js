@@ -85,12 +85,12 @@ function BuyProductRight(props) {
               <Grid item xs={12}>
                 <BankDetailField
                   fieldName="Seller"
-                  userDetail="Pasindu Lakmal"
+                  userDetail={props.productDetail.sellerName}
                 />
               </Grid>
               <Grid item xs={12}>
                 <BankDetailField
-                  fieldName="Quantity"
+                  fieldName="Quantity In Hand"
                   userDetail={props.productDetail.weight}
                   unit="kg"
                 />
@@ -118,12 +118,19 @@ function BuyProductRight(props) {
             <Grid container spacing={4}>
               <Grid item md={12} lg={6}>
                 <TextField
-                  label="Amount"
+                  label="Quantity"
                   type="number"
                   // value={amount}
                   onChange={(e) => {
                     console.log(e.target.value);
-                    if (e.target.value > props.productDetail.weight) {
+                    if(e.target.value < 0){
+                      Swal.fire({
+                        icon: "error",
+                        text: "Quantity can't be less than 0!",
+                        showConfirmButton: true,
+                      });
+                    }
+                    else if (e.target.value > props.productDetail.weight) {
                       e.target.value = amount;
                       Swal.fire({
                         icon: "error",
@@ -132,7 +139,7 @@ function BuyProductRight(props) {
                       });
                     } else {
                       setAmount(e.target.value);
-                      setPrice(amount * props.productDetail.unitPrice);
+                      setPrice(e.target.value * props.productDetail.unitPrice);
                     }
                   }}
                 />
@@ -161,7 +168,7 @@ function BuyProductRight(props) {
                 <Typography>Where you can buy this product ?</Typography>
               </Grid>
               <Grid item xs={4}>
-                <SellerDetailsContainer />
+                <SellerDetailsContainer productDetail={props.productDetail} />
               </Grid>
               {/* <Grid item xs={6}>
                                 <FormControlLabel onClick={() => {paymentTypeHandler("cash")}} control={<Checkbox checked={paymentType === "cash"} />} label="Cash Payment" />
