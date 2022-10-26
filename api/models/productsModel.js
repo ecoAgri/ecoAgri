@@ -44,6 +44,9 @@ const Products = db.define(
     location: {
       type: DataTypes.STRING,
     },
+    district: {
+      type: DataTypes.STRING,
+    },
     latitude: {
       type: DataTypes.STRING,
     },
