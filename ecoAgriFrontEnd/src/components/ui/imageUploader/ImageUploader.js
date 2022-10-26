@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import classes from './ImageUploader.module.css';
 import { Button, CardMedia, Fab, IconButton, InputLabel } from '@mui/material';
@@ -9,13 +9,16 @@ import { useDispatch } from 'react-redux';
 import { imageUploadActions } from '../../../store/uploadImage-slice';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import SimpleSnackbar from '../alerts/SimpleSnackbar';
+import AddProductContext from '../../../context/AddProduct-context';
 function ImageUploader(props) {
 
     const imageInput = useRef();
     const [imageData, setImageData] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [alreadyAdded, setAlreadyAdded] = useState(false);
+    const [previouslyAdded, setPreviouslyAdded] = useState(false);
 
+    const ctx = useContext(AddProductContext);
 
     var removeByAttr = function (arr, attr, value) {
         var i = arr.length;
@@ -34,34 +37,41 @@ function ImageUploader(props) {
 
     const handleUploadHandler = event => {
         let file = event.target.files[0];
-        const newImage = { id: file.lastModified, file: file };
+        const newImage = { id: file.lastModified, file: file, imageId: props.id };
         const existingImage = props.images.find(
             (image) => image.id === newImage.id
         );
-        if (!existingImage) {
-            setImageData({ id: file.lastModified, file: file });
+        const previouslyAddedImage = props.images.find(
+            (image) => image.imageId === newImage.imageId
+        )
+        if (!existingImage && !previouslyAddedImage) {
+            ctx.setProductImages((prevImages) => {
+                return [...prevImages, { id: file.lastModified, file: file, imageId: props.id }];
+            });
             setImagePreview({ id: file.lastModified, image: URL.createObjectURL(file) });
             setAlreadyAdded(false);
+        } else if (previouslyAddedImage) {
+            setAlreadyAdded(false);
+            setPreviouslyAdded(true)
         } else {
+            setPreviouslyAdded(false);
             setAlreadyAdded(true);
         }
     };
 
-    if (imageData !== null) {
-        props.onImageChange((prevImages) => {
-            return [...prevImages, imageData];
-        });
-        setImageData(null);
-    }
-    function deleteImageClick(deleteImage) {
+    // if (imageData !== null) {
+    //     ctx.setProductImages((prevImages) => {
+    //         return [...prevImages, imageData];
+    //     });
+    //     setImageData(null);
+    // }
+    function deleteImageClick() {
         removeByAttr(props.images, 'id', imagePreview.id);
-        console.log(props.images)
-        props.onImageChange(props.images);
+        ctx.setProductImages(props.images);
         setImagePreview(null);
         props.onDelete();
     }
 
-    console.log(props.images)
     return (
         <React.Fragment>
             <InputLabel htmlFor="outlined-adornment-password">{props.label}</InputLabel>
@@ -82,7 +92,8 @@ function ImageUploader(props) {
                     }
                     {imagePreview &&
                         <div>
-                            <CardMedia component="img"
+                            <CardMedia
+                                component="img"
                                 image={imagePreview.image}
                                 sx={{ height: props.size, width: props.size }}
                             />
@@ -102,13 +113,22 @@ function ImageUploader(props) {
                 </React.Fragment>
             }
             {alreadyAdded &&
-            <SimpleSnackbar
-                variant="filled"
-                alertType="error"
-                message="Image is already added !"
-                vertical="bottom"
-                horizontal="center"
-            />
+                <SimpleSnackbar
+                    variant="filled"
+                    alertType="error"
+                    message="Image is already added !"
+                    vertical="bottom"
+                    horizontal="center"
+                />
+            }
+            {previouslyAdded &&
+                <SimpleSnackbar
+                    variant="filled"
+                    alertType="warning"
+                    message="Please Delete Image before add !"
+                    vertical="bottom"
+                    horizontal="center"
+                />
             }
         </React.Fragment>
     )

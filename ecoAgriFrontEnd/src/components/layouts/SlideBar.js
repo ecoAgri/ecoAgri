@@ -40,6 +40,7 @@ function SlideBar(props) {
     setMobileOpen(!mobileOpen);
   };
 
+  // const listItems = SlideBarListItems(props.tabValue);
   const listItems = SlideBarListItems(props.tabValue);
   const drawer = (
     <Box sx={{ textAlign: "center" }}>
@@ -85,7 +86,7 @@ function SlideBar(props) {
     </Box >
   );
   return (
-    // <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Box component="nav">
         <Drawer
           variant="temporary"
@@ -105,7 +106,7 @@ function SlideBar(props) {
           {drawer}
         </Drawer>
       </Box>
-    // </ThemeProvider>
+    </ThemeProvider>
   )
 }
 

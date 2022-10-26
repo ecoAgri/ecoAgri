@@ -21,7 +21,6 @@ import { useNavigate } from "react-router";
 import useInput from "../../hooks/use-input";
 import FileUploader from "../ui/fileUploader/FileUploader";
 function SignUpForm(props) {
-  console.log(props.userType);
   const [inputs, setInputs] = useState({});
   const [file, setFile] = useState(null);
   const setCharityFile = (value) => {
@@ -297,7 +296,7 @@ function SignUpForm(props) {
     if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
       formIsValid = true;
     }
-  } else if (props.userType === "Advertiser") {
+  } else if (props.userType === "Advertiser" || props.userType === "AgriExpert") {
     if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
       formIsValid = true;
     }
@@ -327,6 +326,7 @@ function SignUpForm(props) {
         ...data,
         registerNo: "",
         img: "",
+        isAccept: false,
       };
     } else {
       //image upload part
@@ -346,7 +346,12 @@ function SignUpForm(props) {
         <Grid container sx={{ mb: 3 }}>
           <Grid item xs={12}>
             <CenteredBox align="center">
-              <Typography variant="h5">Sign up as {props.userType}</Typography>
+              {props.from === undefined &&
+                <Typography variant="h5">Sign up as {props.userType}</Typography>
+              }
+              {props.from === "create_user" &&
+                <Typography variant="h5">Create {props.userType}</Typography>
+              }
             </CenteredBox>
           </Grid>
         </Grid>
@@ -424,7 +429,7 @@ function SignUpForm(props) {
               />
             </Grid>
           )}
-          {props.userType === "Advertiser" && (
+          {(props.userType === "Advertiser" || props.userType === "AgriExpert") && (
             <Grid item xs={12}>
               <TextField
                 required
@@ -524,34 +529,51 @@ function SignUpForm(props) {
               helperText={confirmPasswordHasError ? confirmPasswordError : ""}
             />
           </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label={
-                <p className={classes.text}>
-                  By signing up, I agree to the{" "}
-                  <a href="#">Terms of Services</a> and{" "}
-                  <a href="#">Privacy Policy</a>
-                </p>
-              }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              fullWidth
-              type="submit"
-              style={{ textTransform: "none", borderRadius: 10 }}
-              disabled={!formIsValid}
-            >
-              Sign Up
-            </Button>
-            <CenteredBox align="center">
-              <p className={classes.text}>
-                Already have an account? <a href="#">sign in</a>
-              </p>
-            </CenteredBox>
-          </Grid>
+          {props.from === undefined &&
+            <React.Fragment>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label={
+                    <p className={classes.text}>
+                      By signing up, I agree to the{" "}
+                      <a href="#">Terms of Services</a> and{" "}
+                      <a href="#">Privacy Policy</a>
+                    </p>
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  type="submit"
+                  style={{ textTransform: "none", borderRadius: 10 }}
+                  disabled={!formIsValid}
+                >
+                  Sign Up
+                </Button>
+                <CenteredBox align="center">
+                  <p className={classes.text}>
+                    Already have an account? <a style={{cursor: "pointer"}} onClick={() => {navigate("/login")}}>sign in</a>
+                  </p>
+                </CenteredBox>
+              </Grid>
+            </React.Fragment>
+          }
+          {props.from === "create_user" &&
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                fullWidth
+                type="submit"
+                style={{ textTransform: "none", borderRadius: 10 }}
+                disabled={!formIsValid}
+              >
+                Submit
+              </Button>
+            </Grid>
+          }
         </Grid>
       </form>
     </div>

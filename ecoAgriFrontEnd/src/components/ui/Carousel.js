@@ -1,41 +1,44 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
 import MobileStepper from '@mui/material/MobileStepper';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { CardMedia } from '@mui/material';
+import SwipeableViews from 'react-swipeable-views';
+import { autoPlay } from 'react-swipeable-views-utils';
 
-const steps = [
-    {
-        label: 'Select campaign settings',
-        description: `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`,
-    },
-    {
-        label: 'Create an ad group',
-        description:
-            'An ad group contains one or more ads which target a shared set of keywords.',
-    },
-    {
-        label: 'Create an ad',
-        description: <CardMedia
-            component="img"
-            height="194"
-            image="https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
-            alt="Paella dish"
-        />,
-    },
-];
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export default function Carousel(props) {
+// const images = [
+//     {
+//         label: 'San Francisco – Oakland Bay Bridge, United States',
+//         imgPath:
+//             'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60',
+//     },
+//     {
+//         label: 'Bird',
+//         imgPath:
+//             'https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60',
+//     },
+//     {
+//         label: 'Bali, Indonesia',
+//         imgPath:
+//             'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250',
+//     },
+//     {
+//         label: 'Goč, Serbia',
+//         imgPath:
+//             'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60',
+//     },
+// ];
+
+function Carousel(props) {
     const theme = useTheme();
     const [activeStep, setActiveStep] = React.useState(0);
-    const maxSteps = props.steps.length;
+    const maxSteps = props.images.length;
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -45,28 +48,13 @@ export default function Carousel(props) {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    const handleStepChange = (step) => {
+        setActiveStep(step);
+    };
+
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            {/* <Paper
-                square
-                elevation={0}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: 50,
-                    pl: 2,
-                    bgcolor: 'background.default',
-                }}
-            >
-                <Typography>
-                    {props.steps[activeStep].label}
-                </Typography>
-            </Paper> */}
-            <Box>
-                {props.steps[activeStep].description}
-            </Box>
+        <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
             <MobileStepper
-                variant="text"
                 steps={maxSteps}
                 position="static"
                 activeStep={activeStep}
@@ -95,6 +83,32 @@ export default function Carousel(props) {
                     </Button>
                 }
             />
+            <AutoPlaySwipeableViews
+                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                index={activeStep}
+                onChangeIndex={handleStepChange}
+                enableMouseEvents
+            >
+                {props.images.map((step, index) => (
+                    <div key={step.label}>
+                        {Math.abs(activeStep - index) <= 2 ? (
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 255,
+                                    display: 'block',
+                                    maxWidth: 400,
+                                    overflow: 'hidden',
+                                    width: '100%',
+                                }}
+                                src={step.imgPath}
+                            />
+                        ) : null}
+                    </div>
+                ))}
+            </AutoPlaySwipeableViews>
         </Box>
     );
 }
+
+export default Carousel;
