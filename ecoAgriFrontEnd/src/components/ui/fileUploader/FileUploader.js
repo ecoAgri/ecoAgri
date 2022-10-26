@@ -15,7 +15,6 @@ function FileUploader(props) {
         deleteFileClick: deleteFileClick
     } = UseFileInput(() => { })
 
-    console.log(fileData)
     props.onChange(fileData)
     return (
         <React.Fragment>
@@ -51,7 +50,6 @@ function FileUploader(props) {
                     </Grid>
                 </Grid>
             }
-
         </React.Fragment>
     )
 }
