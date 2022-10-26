@@ -25,6 +25,7 @@ export default function BuyProducts(props) {
       (x) => x.productCategory == props.productCategory
     )
   );
+  
   // const vegitables = useSelector((state) => state.product.products.filter(x => x.productCategory == "Vegitable"));
   let token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
@@ -105,7 +106,7 @@ export default function BuyProducts(props) {
         </Grid>
         {itemProductData.map((item) => (
           <Grid key={item.key} item xs={12} sm={6} md={4} lg={3}>
-            <ProdcutCard item={item} />
+            <ProdcutCard productType={props.productType} item={item} />
           </Grid>
         ))}
         {/* {itemData.map((item) => (
