@@ -44,6 +44,12 @@ const Products = db.define(
     location: {
       type: DataTypes.STRING,
     },
+
+    district: {
+      type: DataTypes.STRING,
+    },
+    latitude: {
+
     isDonate: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -794,6 +800,7 @@ const Products = db.define(
       type: DataTypes.STRING,
     },
     productCategory: {
+
       type: DataTypes.STRING,
     },
     weight: {

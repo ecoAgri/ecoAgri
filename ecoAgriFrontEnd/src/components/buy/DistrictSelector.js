@@ -14,6 +14,7 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import { Divider, Grid } from '@mui/material';
 import PopularAreas from './PopularAreas';
 import Districts from './Districts';
+import DistrictService from '../../services/DistrictService';
 
 export default function DistrictSelector() {
     const [open, setOpen] = React.useState(false);
@@ -22,6 +23,10 @@ export default function DistrictSelector() {
         setOpen(!open);
     };
 
+    // console.log(DistrictService["Colombo"])
+    DistrictService.map((district) => {
+
+    })
     return (
         <div>
             <Grid container>
@@ -36,28 +41,12 @@ export default function DistrictSelector() {
                             </ListSubheader>
                         }
                     >
-                        <Districts districtName="Colombo"
-                            places={
-                                [
-                                    "Maharagma",
-                                    "Nugegoda",
-                                    "Piliyandala",
-                                    "Dehiwala",
-                                    "Kottawa"
-                                ]
-                            }
-                        />
-                        <Districts districtName="Galle"
-                            places={
-                                [
-                                    "Galle City",
-                                    "Ambalangoda",
-                                    "Elpitiya",
-                                    "Bentota",
-                                    "Baddegama",
-                                ]
-                            }
-                        />
+                        {DistrictService.map((place) => (
+                            <Districts
+                                districtName={place.district}
+                                places={place.cities}
+                            />
+                        ))} 
                     </List>
                 </Grid>
             </Grid>

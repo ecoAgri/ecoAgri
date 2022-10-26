@@ -30,6 +30,16 @@ import ForgetPassword from './components/pages/ForgetPassword';
 import OtpVerify from './components/pages/OtpVerify';
 import Checkout from './components/checkout/Checkout';
 
+import StripePaymentForm from './components/checkout/Payments/StripePaymentForm';
+import CharityDashboard from './components/pages/charity/Dashboard';
+import CharityProfile from './components/pages/buyer/Profile';
+import FarmerBuy from './components/pages/farmer/FarmerBuy';
+import AdvertiserDashboard from './components/pages/advertiser/Dashboard';
+import AdvertiserProfile from './components/pages/moderator/Profile';
+import ModeratorDashboard from './components/moderator/ModeratorDashboard';
+import AgriExpertDashboard from './components/pages/agriExpert/Dashboard';
+
+
 function App() {
   const theme = createTheme({
     palette: {
@@ -68,6 +78,7 @@ function App() {
           <Route path="/sell/add-bankAccount" element={<AddBank />} />
           <Route path="/sell/add-sell-product" element={<AddSaleProduct />} />
           <Route path="/donate/add-donate-product" element={<AddDonateProduct />} />
+          <Route path="/farmer/buy" element={<FarmerBuy />} />
 
           {/* buyer */}
           <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
@@ -81,7 +92,7 @@ function App() {
 
 
           {/* moderator */}
-          <Route path='/moderator/dashboard' element={<AdminDashboard />} />
+          <Route path='/moderator/dashboard' element={<ModeratorDashboard />} />
           <Route path='/moderator/articals' element={<ConfirmArticals />} />
           <Route path='/moderator/profile' element={<ModeratorProfile />} />
           {/* <Route path="/buy-product/" element={<BuyProduct />} /> */}
@@ -89,6 +100,21 @@ function App() {
           <Route path="/testing" element={<Test />} />
 
 
+          {/* charity */}
+          <Route path='/charity/dashboard' element={<CharityDashboard />} />
+          <Route path='/charity/profile' element={<CharityProfile />} />
+          <Route path="/request-product/:productId" element={<BuyProduct />} />
+
+
+          {/* advertiser */}
+          <Route path="/advertiser/dashboard" element={<AdvertiserDashboard />} />
+          <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
+
+          {/* agriExpert */}
+          <Route path="/agriExpert/dashboard" element={<AgriExpertDashboard />}></Route>
+          <Route path='/agriExpert/articals' element={<ConfirmArticals />} />
+          <Route path='/agriExpert/profile' element={<ModeratorProfile />} />
+          {/* <Route path="/profile" element={<Profile />}></Route> */}
           <Route path="/otp-verify" element={<OtpVerify />} />
           {/* <Route path="/checkout" element={<Checkout />} /> */}
         </Routes>

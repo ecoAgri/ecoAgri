@@ -27,8 +27,10 @@ export const getArticles = async (dispatch, token) => {
       },
     });
     dispatch(getArticleSuccess(res.data));
+    return 1;
   } catch (err) {
     dispatch(getArticleFailure());
+    return 0;
   }
 };
 

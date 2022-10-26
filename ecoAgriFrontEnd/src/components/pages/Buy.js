@@ -19,7 +19,7 @@ function Buy() {
         </Grid>
         <Grid item xs={12} sx={{ bgcolor: "#FFF", mt: 3, p: 3 }}>
           <BuyProducts
-            productCategory="Vegitable"
+            productCategory="Vegetable"
           />
         </Grid>
         <Grid item xs={12} sx={{ bgcolor: "#FFF", mt: 3, p: 3 }}>

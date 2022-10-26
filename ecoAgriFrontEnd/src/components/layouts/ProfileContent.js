@@ -1,9 +1,11 @@
 import { Avatar, Grid, IconButton } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, { useEffect } from 'react'
 import ProfileDetails from '../farmer/profile/ProfileDetails'
 import ShowBankDetails from '../farmer/sell/ShowBankDetails'
 import CenteredBox from '../ui/CenteredBox'
+import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const style = {
@@ -20,6 +22,12 @@ const style = {
     // pr: 0,
 }
 function ProfileContent() {
+    let user = useSelector((state) => state.user.currentUser);
+    // useEffect(()=>{
+    //     const userGetData = ()=>{
+
+    //     }
+    // });
 
     return (
         <div>

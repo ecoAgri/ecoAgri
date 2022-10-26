@@ -16,7 +16,7 @@ function AddSaleProduct() {
                 <Grid item xs={12} sx={{ p: 5, mb: 5, bgcolor: "#fff" }}>
                     <CenteredBox align="center">
                         <Typography variant="h3">
-                            Sale Your Product
+                            Sell Your Product
                         </Typography>
                     </CenteredBox>
                 </Grid>

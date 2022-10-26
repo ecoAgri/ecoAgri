@@ -24,7 +24,7 @@ export const register = async (User) => {
   try {
     const res = await publicRequest.post(`/register`, User);
     console.log(res);
-    alert("User registration Success!");
+    // alert("User registration Success!");
     return 1;
     //   dispatch(addUserSuccess(res.data));
   } catch (err) {
@@ -58,8 +58,10 @@ export const getUsers = async (dispatch,token) => {
       },
     });
     dispatch(getUserSuccess(res.data));
+    return 1;
   } catch (err) {
     dispatch(getUserFailure());
+    return 0;
   }
 };
 

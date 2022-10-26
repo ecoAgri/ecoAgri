@@ -46,7 +46,7 @@ const imageBoxStyle = {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#effcf0",
-    overflow: "hidden",
+    // overflow: "hidden",
     boxShadow: 24
 }
 
@@ -57,76 +57,108 @@ export default function BuyProductLeft(props) {
         setValue(newValue);
     };
 
+    console.log(props.productDetail);
+    const images = [];
+    if (props.productDetail.image1) {
+        images.push(props.productDetail.image1);
+    }
+    if (props.productDetail.image2) {
+        images.push(props.productDetail.image2);
+    }
+    if (props.productDetail.image3) {
+        images.push(props.productDetail.image3);
+    }
+    if (props.productDetail.image4) {
+        images.push(props.productDetail.image4);
+    }
+
+    console.log(images.length);
     return (
         <Box sx={{ bgcolor: '#FFF', p: 3 }}>
             <Box>
                 <Tabs value={value} onChange={handleChange}>
-                    <Tab sx={{ p: 1, pl: 2 }}
-                        label={
-                            <ProdcutIMage
-                                url={props.productDetail.image1}
-                            />
-                        }
-                        {...a11yProps(0)}
-                    />
-                    <Tab sx={{ p: 1 }}
-                        label={
-                            <ProdcutIMage
-                                url={props.productDetail.image2}
-                            />
-                        }
-                        {...a11yProps(1)}
-                    />
-                    <Tab sx={{ p: 1 }}
-                        label={
-                            <ProdcutIMage
-                                url={props.productDetail.image3}
-                            />
-                        }
-                        {...a11yProps(2)}
-                    />
-                    <Tab sx={{ p: 1 }}
-                        label={
-                            <ProdcutIMage
-                                url={props.productDetail.image3}
-                            />
-                        }
-                        {...a11yProps(3)}
-                    />
+                    {images.length >= 1 &&
+                        <Tab sx={{ p: 1, pl: 2 }}
+                            label={
+                                <ProdcutIMage
+                                    url={props.productDetail.image1}
+                                />
+                            }
+                            {...a11yProps(0)}
+                        />
+                    }
+                    {images.length >= 2 &&
+                        <Tab sx={{ p: 1 }}
+                            label={
+                                <ProdcutIMage
+                                    url={props.productDetail.image2}
+                                />
+                            }
+                            {...a11yProps(1)}
+                        />
+                    }
+                    {images.length >= 3 &&
+                        <Tab sx={{ p: 1 }}
+                            label={
+                                <ProdcutIMage
+                                    url={props.productDetail.image3}
+                                />
+                            }
+                            {...a11yProps(2)}
+                        />
+                    }
+                    {images.length >= 4 &&
+                        <Tab sx={{ p: 1 }}
+                            label={
+                                <ProdcutIMage
+                                    url={props.productDetail.image3}
+                                />
+                            }
+                            {...a11yProps(3)}
+                        />
+                    }
                 </Tabs>
             </Box>
-            <TabPanel value={value} index={0}>
-                <Box sx={imageBoxStyle}>
-                    <img
-                        src={props.productDetail.image1}
-                        style={{ height: "100%" }}
-                    />
-                </Box>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <Box sx={imageBoxStyle}>
-                    <img
-                        src={props.productDetail.image2}
-                        style={{ height: "100%" }}
-                    />
-                </Box>
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                <Box sx={imageBoxStyle}>
-                    <img
-                        src={props.productDetail.image3}
-                        style={{ height: "100%" }}
-                    />
-                </Box>
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-                <Box sx={imageBoxStyle}>
-                    <img
-                        src={props.productDetail.image3}
-                        style={{ height: "100%" }}
-                    />
-                </Box>
-            </TabPanel>
+            {images.length >= 1 &&
+                <TabPanel value={value} index={0}>
+                    <Box sx={imageBoxStyle}>
+                        <img
+                            src={props.productDetail.image1}
+                            style={{ height: "100%", width: "100%" }}
+                        />
+                    </Box>
+                </TabPanel>
+            }
+            {images.length >= 2 &&
+                <TabPanel value={value} index={1}>
+                    <Box sx={imageBoxStyle}>
+                        <img
+                            src={props.productDetail.image2}
+                            style={{ height: "100%", width: "100%" }}
+                        />
+                    </Box>
+                </TabPanel>
+            }
+            {images.length >= 3 &&
+                <TabPanel value={value} index={2}>
+                    <Box sx={imageBoxStyle}>
+                        <img
+                            src={props.productDetail.image3}
+                            style={{ height: "100%", width: "100%" }}
+                        />
+                    </Box>
+                </TabPanel>
+            }
+            {images.length >= 4 &&
+                <TabPanel value={value} index={3}>
+                    <Box sx={imageBoxStyle}>
+                        <img
+                            src={props.productDetail.image3}
+                            style={{ height: "100%", width: "100%" }}
+                        />
+                    </Box>
+                </TabPanel>
+            }
         </Box>
     );
 }

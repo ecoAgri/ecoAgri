@@ -4,7 +4,6 @@ import { Box } from '@mui/system'
 import CenteredBox from '../../ui/CenteredBox';
 import classes from "../../ui/Form.module.css";
 import useInput from "../../../hooks/use-input";
-import { useSelector } from 'react-redux';
 import UploadProduct from './UploadProduct';
 import SetLocationModal from './SetLocationModal';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
@@ -13,6 +12,8 @@ import { storage } from '../../../Firebase';
 import { v4 } from "uuid";
 import { async } from '@firebase/util';
 import AddProductContext from '../../../context/AddProduct-context';
+import { addProduct } from '../../../store/productApiCalls';
+import { useDispatch, useSelector } from "react-redux";
 
 function AddProductForm(props) {
   const style = {
@@ -187,6 +188,11 @@ function AddProductForm(props) {
   const [productImages, setProductImages] = useState([]);
   const [productImageUrls, setProductImageUrls] = useState([]);
   const [imageUploadingCount, setImageUploadingCount] = useState([]);
+
+  const user = useSelector((state) => state.user.currentUser);
+  const token = useSelector((state) => state.user.token);
+  const dispatch = useDispatch();
+
   console.log(productImages);
   const deleteImageHandler = () => {
     const images = productImages;
@@ -252,12 +258,59 @@ function AddProductForm(props) {
             text: 'Something went wrong !',
           })
         },
-        () => {
+        async () => {
           console.log(uploadTask.snapshot);
           getDownloadURL(uploadTask.snapshot.ref)
             .then((downloadURL) => {
               imagUrls.push(downloadURL);
               setProductImageUrls(imagUrls)
+              console.log(imagUrls);
+
+              const data = {
+                productName: productName,
+                productCategory: productCategory,
+                weight: weight,
+                unitPrice: props.productType === "sellProduct" ? unitPrice : 0,
+                fieldAddress:fieldAddress,
+                manuDate: manuDate,
+                expireDate: expireDate,
+                status:"Pending",
+                isAccept: true,
+                location:"Malabe",
+                latitude: liveLocation.lat,
+                longitude: liveLocation.lng,
+                isDonate: props.productType === "sellProduct" ? false : true,
+                priceUOM:"Rs.",
+                sellerId:user.id,
+                sellerName:user.username,
+                sellerContact:user.phone_number,
+                weightUOM:"Kg",
+                image1:imagUrls[0],
+                image2:imagUrls[1],
+                image3:imagUrls[2],
+                image4:imagUrls[3]
+          
+                // images: productImageUrls.map((image) => {
+                //   return image
+                // })
+              };
+          
+              console.log(data);
+              const productDataSave = addProduct(data,dispatch,token);
+              if(productDataSave){
+                Swal.fire({
+                  icon: "success",
+                  title: "Product Save Successful!",
+                  showConfirmButton: true,
+                });
+              }else {
+                Swal.fire({
+                  icon: "error",
+                  text: "Product Save Unsuccess!",
+                  showConfirmButton: true,
+                });
+              }
+
               console.log(imagUrls);
             }
             ).catch((error) => {
@@ -275,22 +328,6 @@ function AddProductForm(props) {
     if (imageUploadingCount === productImages.length) {
       console.log(productImageUrls);
     }
-
-    const data = {
-      productName: productName,
-      productCategory: productCategory,
-      weight: weight,
-      unitPrice: unitPrice,
-      manuDate: manuDate,
-      expireDate: expireDate,
-      images: productImageUrls.map((image) => {
-        return image
-      }),
-      latitude: liveLocation.lat,
-      longitude: liveLocation.lng,
-    };
-
-    // console.log(data);
     //api call here
   }
   return (
@@ -336,7 +373,7 @@ function AddProductForm(props) {
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  <MenuItem value={"Fruit"}>Fruit</MenuItem>
+                  <MenuItem value={"Fruits"}>Fruit</MenuItem>
                   <MenuItem value={"Vegetable"}>Vegetable</MenuItem>
                 </Select>
                 <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
