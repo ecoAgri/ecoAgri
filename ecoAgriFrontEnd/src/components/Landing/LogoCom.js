@@ -2,6 +2,7 @@ import React from "react";
 import { Box, styled } from "@mui/material";
 import Logo from "../../assets/images/ecoAgri.png";
 
+
 function LogoCom() {
   const LogoBox = styled(Box)(({ theme }) => ({
     position: "absolute",
@@ -71,6 +72,7 @@ function LogoCom() {
     height: 144,
     width: 136,
     position: "absolute",
+
     top: 5,
     left: 8,
     [theme.breakpoints.down("lg")]: {
@@ -93,13 +95,3 @@ function LogoCom() {
       left: 0,
     },
   }));
-  return (
-    <LogoBox>
-      <BoxImage component="img" alt="The house from the offer." src={Logo} />
-      <IconBoxOne></IconBoxOne>
-      <IconBoxTwo></IconBoxTwo>
-    </LogoBox>
-  );
-}
-
-export default LogoCom;
