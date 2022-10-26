@@ -15,7 +15,18 @@ import {
     countOrderStart,
     countOrderSuccess,
     countOrderFailure,
+    getAmountSuccess,
+    getQuantitySuccess,
+    getProductIdSuccess,
+    getOrderIdSuccess,
 } from "./orderSlice";
+
+export const saveAmount = async (dispatch, amount,quantity,productId,id) => {
+  dispatch(getAmountSuccess(amount));
+  dispatch(getQuantitySuccess(quantity));
+  dispatch(getProductIdSuccess(productId));
+  dispatch(getOrderIdSuccess(id));
+};
 
 export const getOrders = async (dispatch, token) => {
   dispatch(getOrderStart());
@@ -27,8 +38,10 @@ export const getOrders = async (dispatch, token) => {
       },
     });
     dispatch(getOrderSuccess(res.data));
+    return 1;
   } catch (err) {
     dispatch(getOrderFailure());
+    return 0;
   }
 };
 
@@ -58,7 +71,8 @@ export const updateOrder = async (id, Order, dispatch, token) => {
       },
     });
     console.log(res);
-    dispatch(updateOrderSuccess({ id, Order }));
+    dispatch(updateOrderSuccess({ id, res }));
+    // dispatch(updateOrderSuccess(res.data));
     return 1;
   } catch (err) {
     dispatch(updateOrderFailure());
