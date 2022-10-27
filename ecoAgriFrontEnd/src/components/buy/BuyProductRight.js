@@ -17,6 +17,7 @@ import SellerDetailsContainer from "./SellerDetailsContainer";
 import { addOrder } from "../../store/orderApiCalls";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { updateProduct } from "../../store/productApiCalls";
 
 function BuyProductRight(props) {
   const [paymentType, setPaymentType] = useState("");
@@ -26,6 +27,9 @@ function BuyProductRight(props) {
   let token = useSelector((state) => state.user.token);
   let userId = useSelector((state) => state.user.currentUser.id);
   let user = useSelector((state) => state.user.currentUser);
+  let userType = useSelector((state) => state.user.userType);
+
+  const product = useSelector((state) => state.product.products);
   const dispatch = useDispatch();
 
   const paymentTypeHandler = (payment_type) => {
@@ -46,15 +50,37 @@ function BuyProductRight(props) {
       weightUOM: props.productDetail.weightUOM,
       sellerId: props.productDetail.sellerId,
       sellerName: props.productDetail.sellerName,
-      username:user.username,
+      username: user.username,
       sellerContact: props.productDetail.sellerContact,
-      totalPrice:price,
+      totalPrice: price,
       manuDate: "2022-05-14",
       expireDate: pickDate,
       fieldAddress: "789",
       status: "Pending",
       isAccept: false,
     };
+    if (userType == "Charity") {
+      let oldWeight = 0;
+      product.map((item)=>{
+        if(item.id == props.productId){
+          oldWeight = item.weight;
+        }
+      });
+      console.log("Old Weight:"+oldWeight);
+      console.log("Old Weight:"+amount);
+      const productStatus = await updateProduct(
+        data.productId,
+        { weight: oldWeight-amount },
+        dispatch,
+        token
+      );
+
+      if(productStatus){
+        console.log("Success");
+      }else {
+        console.log("unSuccess");
+      }
+    }
     const afterPlaceOrder = await addOrder(data, dispatch, token);
     if (afterPlaceOrder) {
       Swal.fire({
@@ -123,14 +149,13 @@ function BuyProductRight(props) {
                   // value={amount}
                   onChange={(e) => {
                     console.log(e.target.value);
-                    if(e.target.value < 0){
+                    if (e.target.value < 0) {
                       Swal.fire({
                         icon: "error",
                         text: "Quantity can't be less than 0!",
                         showConfirmButton: true,
                       });
-                    }
-                    else if (e.target.value > props.productDetail.weight) {
+                    } else if (e.target.value > props.productDetail.weight) {
                       e.target.value = amount;
                       Swal.fire({
                         icon: "error",

@@ -10,6 +10,7 @@ import styled from '@emotion/styled';
 import { green } from '@mui/material/colors';
 import UpdateUserForm from './UpdateUserForm';
 import classes from "../ui/ScrollBar.module.css";
+import Swal from 'sweetalert2'
 
 const style = {
     position: 'absolute',
@@ -37,6 +38,7 @@ const ColorButton2 = styled(Button)(({ theme }) => ({
     },
 }));
 export default function UpdateUserModal(props) {
+
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => {
         setOpen(true)
@@ -60,7 +62,7 @@ export default function UpdateUserModal(props) {
                     </CenteredBox>
                     <Grid container sx={{ pr: 3 }}>
                         <Grid item xs={12}>
-                            <UpdateUserForm userType={props.userType} />
+                            <UpdateUserForm updateTrigger={props.updateTrigger} onClose={handleClose} userType={props.userType} data={props.data} />
                         </Grid>
                     </Grid>
 

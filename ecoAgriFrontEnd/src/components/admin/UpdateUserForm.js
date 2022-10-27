@@ -6,7 +6,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userTypeSelectorButtonActions } from "../../store/userType-selector-slice";
@@ -16,15 +16,28 @@ import { register } from "../../store/userApiCalls";
 import { useNavigate } from "react-router";
 import useInput from "../../hooks/use-input";
 import FileUploader from "../ui/fileUploader/FileUploader";
+import { updateUser } from "../../store/userApiCalls";
+import Swal from 'sweetalert2'
 function UpdateUserForm(props) {
     console.log(props.userType);
+    console.log(props.data);
     const [inputs, setInputs] = useState({});
     const [file, setFile] = useState(null);
     const setCharityFile = (value) => {
         setFile(value)
     }
+    const token = useSelector((state) => state.user.token);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setFname(props.data.col1)
+        setPhoneNumber(props.data.phoneNumber);
+        setAddress(props.data.address);
+        setEmail(props.data.col3);
+        setTown(props.data.town);
+        setCity(props.data.city);
+    },[])
 
     //Helpers to validate Fname and Lname
     const hasNumber = (string) => {
@@ -44,6 +57,7 @@ function UpdateUserForm(props) {
     //First Name Validate
     const {
         value: fname,
+        setValue: setFname,
         isValid: fnameIsValid,
         hasError: fnameHasError,
         error: fnameError,
@@ -60,25 +74,27 @@ function UpdateUserForm(props) {
     })
 
     //Last Name Validate
-    const {
-        value: lname,
-        isValid: lnameIsValid,
-        hasError: lnameHasError,
-        error: lnameError,
-        valueChangeHandler: lnameChangeHandler,
-        inputBlurHandler: lnameBlurHandler,
-    } = useInput((value) => {
-        if (hasNumber(value.trim())) {
-            return { inputIsValid: false, error: "Can't contained numbers !" };
-        } else if (hasSpecialChars(value.trim())) {
-            return { inputIsValid: false, error: "Can't contained special chars !" };
-        } else {
-            return { inputIsValid: true, error: "" };
-        }
-    })
+    // const {
+    //     value: lname,
+    //     setValue: setLname,
+    //     isValid: lnameIsValid,
+    //     hasError: lnameHasError,
+    //     error: lnameError,
+    //     valueChangeHandler: lnameChangeHandler,
+    //     inputBlurHandler: lnameBlurHandler,
+    // } = useInput((value) => {
+    //     if (hasNumber(value.trim())) {
+    //         return { inputIsValid: false, error: "Can't contained numbers !" };
+    //     } else if (hasSpecialChars(value.trim())) {
+    //         return { inputIsValid: false, error: "Can't contained special chars !" };
+    //     } else {
+    //         return { inputIsValid: true, error: "" };
+    //     }
+    // })
 
     const {
         value: phone_number,
+        setValue: setPhoneNumber,
         isValid: phone_numberIsValid,
         hasError: phone_numberHasError,
         error: phone_numberError,
@@ -90,6 +106,7 @@ function UpdateUserForm(props) {
 
     const {
         value: address,
+        setValue: setAddress,
         isValid: addressIsValid,
         hasError: addressHasError,
         error: addressError,
@@ -112,6 +129,7 @@ function UpdateUserForm(props) {
     const [emailResponse, setEmailResponse] = useState("");
     const {
         value: email,
+        setValue:setEmail,
         isValid: emailIsValid,
         hasError: emailHasError,
         error: emailError,
@@ -138,6 +156,7 @@ function UpdateUserForm(props) {
 
     const {
         value: town,
+        setValue:setTown,
         isValid: townIsValid,
         hasError: townHasError,
         error: townError,
@@ -149,6 +168,7 @@ function UpdateUserForm(props) {
 
     const {
         value: city,
+        setValue:setCity,
         isValid: cityIsValid,
         hasError: cityHasError,
         error: cityError,
@@ -203,19 +223,19 @@ function UpdateUserForm(props) {
 
     let formIsValid = false;
     if (props.userType === "Farmer") {
-        if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        if (fnameIsValid  && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid) {
             formIsValid = true;
         }
     } else if (props.userType === "Buyer") {
-        if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid) {
+        if (fnameIsValid && phone_numberIsValid ) {
             formIsValid = true;
         }
     } else if (props.userType === "Charity") {
-        if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        if (fnameIsValid  && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid ) {
             formIsValid = true;
         }
     } else if (props.userType === "Advertiser") {
-        if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        if (fnameIsValid  && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid) {
             formIsValid = true;
         }
     }
@@ -227,7 +247,7 @@ function UpdateUserForm(props) {
             return;
         }
         let data = {
-            username: `${lname} ${fname}`,
+            username: fname,
             phone_number: phone_number,
             address: address,
             email: email,
@@ -238,6 +258,7 @@ function UpdateUserForm(props) {
             password: password,
             confPassword: confirmPassword,
         };
+        console.log(data);
 
         if (props.userType !== "Charity") {
             data = {
@@ -248,12 +269,21 @@ function UpdateUserForm(props) {
         } else {
             //image upload part
         }
-        const result = await register(data);
+        const result = await updateUser(props.data.id ,data ,dispatch,token);
         if (result) {
-            navigate("/login");
+            //navigate("/login");
+            props.onClose();
+            Swal.fire(
+                'Good job!',
+                'You clicked the button!',
+                'success'
+              )
+              props.updateTrigger(props.data.id);
+              window.location.reload(false);
         }
         console.log(data);
     };
+
     return (
         <div>
             <form onSubmit={clickRegister}>
@@ -266,22 +296,24 @@ function UpdateUserForm(props) {
                 </Grid>
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                     <Grid item xs={6}>
+                        
                         <TextField
 
                             fullWidth
                             variant="standard"
-                            label="First Name"
+                            label="Name"
                             name="fname"
                             id="fname"
                             type="text"
+                            // defaultValue={props.data.col1}
                             value={fname}
                             onChange={fnameChangeHandler}
                             onBlur={fnameBlurHandler}
                             error={fnameHasError}
-                            helperText={fnameHasError ? fnameError : ""}
+                           helperText={fnameHasError ? fnameError : ""}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    {/* <Grid item xs={6}>
                         <TextField
 
                             fullWidth
@@ -290,13 +322,14 @@ function UpdateUserForm(props) {
                             name="lname"
                             id="lname"
                             type="text"
+                            defaultValue="Yohan"
                             value={lname}
                             onChange={lnameChangeHandler}
                             onBlur={lnameBlurHandler}
                             error={lnameHasError}
                             helperText={lnameHasError ? lnameError : ""}
                         />
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 <Grid container sx={{ mb: 3 }} spacing={3}>
                     <Grid item xs={12}>
@@ -409,7 +442,7 @@ function UpdateUserForm(props) {
                             />
                         </Grid>
                     )}
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <PasswordInputField
                             label="Password"
                             id="standard-adornment-sign-up-password"
@@ -420,8 +453,8 @@ function UpdateUserForm(props) {
                             error={passwordHasError}
                             helperText={passwordHasError ? passwordError : ""}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </Grid> */}
+                    {/* <Grid item xs={12}>
                         <PasswordInputField
                             label="Confirm Password"
                             name="confirm_password"
@@ -432,7 +465,7 @@ function UpdateUserForm(props) {
                             error={confirmPasswordHasError}
                             helperText={confirmPasswordHasError ? confirmPasswordError : ""}
                         />
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12}>
                         <Button

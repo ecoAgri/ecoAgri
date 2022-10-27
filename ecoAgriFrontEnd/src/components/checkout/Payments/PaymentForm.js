@@ -103,10 +103,10 @@ const PaymentForm = () => {
       const orderStatus = await updateOrder(orderId, {status:"Completed",isAccept:true}, dispatch, token);
 
       if(productStatus && orderStatus){
-        alert("Success");
+        console.log("Success");
         navigate("/buyer/buy-details");
       }else{
-        alert("Unsuccess")
+        console.log("Unsuccess")
       }
 
       console.log(json);

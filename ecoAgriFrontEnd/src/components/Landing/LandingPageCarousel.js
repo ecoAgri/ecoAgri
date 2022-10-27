@@ -72,7 +72,7 @@ function LandingPageCarousel() {
                 <Slider {...settings}>
                     {itemData.map((item) => (
                         <Box key={item.key} sx={{ px: 1 }}>
-
+                            <ProdcutCard pageType="landing" item={item} />
                         </Box>
                     ))}
                 </Slider>

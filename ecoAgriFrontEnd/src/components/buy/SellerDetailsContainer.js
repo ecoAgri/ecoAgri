@@ -31,6 +31,7 @@ export default function SellerDetailsContainer(props) {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const navigate = useNavigate();
+    console.log("Data",props.productDetail);
 
     return (
         <div>
@@ -50,7 +51,7 @@ export default function SellerDetailsContainer(props) {
                     <Grid container sx={{pr: 3}} spacing={2}>
                         <Grid item xs={12}>
                             {/* map here */}
-                            <GoogleMapContainer />
+                            <GoogleMapContainer latitude={props.productDetail.latitude} longitude={props.productDetail.longitude} />
                             {/* <TomTomMapContainer /> */}
                             {/* <ImageListItem style={{ borderRadius: 10 }}>
                                 <img
@@ -67,7 +68,7 @@ export default function SellerDetailsContainer(props) {
                             </ImageListItem> */}
                         </Grid>
                         <Grid item xs={12}>
-                            <SellerDetails />
+                            <SellerDetails productDetail={props.productDetail} />
                         </Grid>
                         {/* <Grid item xs={12}>
                             <CenteredBox align="right">

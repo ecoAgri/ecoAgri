@@ -25,7 +25,10 @@ import { v4 } from "uuid";
 import Swal from "sweetalert2";
 import { storage } from "../../Firebase";
 import BackDrop from "../ui/BackDrop";
+import DistrictService from "../../services/DistrictService";
+import PlaceSelector from "./PlaceSelector";
 function SignUpForm(props) {
+  // https://raw.githubusercontent.com/Group22UCSC/thekolaya/main/vendors/images/default_profile/profile.jpg
   const [inputs, setInputs] = useState({});
   const [file, setFile] = useState(null);
   const [isDataUploading, setIsDataUploading] = useState(false);
@@ -250,7 +253,7 @@ function SignUpForm(props) {
 
   //Helper for the password
   function CheckPassword(string) {
-    let pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+    let pattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,10000}$/;
     if (!string.match(pattern)) {
       return true;
     } else {
@@ -302,23 +305,44 @@ function SignUpForm(props) {
   };
 
   let formIsValid = false;
-  if (props.userType === "Farmer") {
-    if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
-      formIsValid = true;
+  if (props.from === "create_user") {
+    if (props.userType === "Farmer") {
+      if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Buyer") {
+      if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Charity") {
+      if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Advertiser" || props.userType === "AgriExpert") {
+      if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid) {
+        formIsValid = true;
+      }
     }
-  } else if (props.userType === "Buyer") {
-    if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
-      formIsValid = true;
-    }
-  } else if (props.userType === "Charity") {
-    if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
-      formIsValid = true;
-    }
-  } else if (props.userType === "Advertiser" || props.userType === "AgriExpert") {
-    if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
-      formIsValid = true;
+  } else {
+    if (props.userType === "Farmer") {
+      if (fnameIsValid && lnameIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Buyer") {
+      if (fnameIsValid && lnameIsValid && phone_numberIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Charity") {
+      if (fnameIsValid && lnameIsValid && registerNoIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
+        formIsValid = true;
+      }
+    } else if (props.userType === "Advertiser" || props.userType === "AgriExpert") {
+      if (fnameIsValid && lnameIsValid && emailIsValid && phone_numberIsValid && addressIsValid && cityIsValid && townIsValid && passwordIsValid && confirmPasswordIsValid && checked) {
+        formIsValid = true;
+      }
     }
   }
+
 
 
   const clickRegister = async (e) => {
@@ -328,7 +352,7 @@ function SignUpForm(props) {
       return;
     }
     let data = {
-      username: `${lname} ${fname}`,
+      username: `${fname} ${lname}`,
       phone_number: phone_number,
       address: address,
       email: email,
@@ -341,47 +365,24 @@ function SignUpForm(props) {
     };
 
     if (props.userType === "Charity") {
-      const filePath = `/signup/charityProof/${file.name + v4()}`
-      const fileRef = ref(storage, filePath);
-
-      const uploadTask = uploadBytesResumable(fileRef, file);
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          switch (snapshot.state) {
-            case 'paused':
-              break;
-            case 'running':
-              break;
-          }
-        },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Something went wrong !',
-          })
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            data = {
-              ...data,
-              registerNo: "",
-              img: downloadURL,
-              isAccept: false,
-            };
-            setRegistrationResult(register(data))
-          }).catch((error) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong !',
-            })
-          });
-          setIsDataUploading(false);
-        }
-      );
-
+      data = {
+        ...data,
+        registerNo: "",
+        img: file,
+        isAccept: false,
+      };
+      const status = register(data);
+      if (status) {
+        Swal.fire(
+          'Registration Success!',
+          'You clicked the button!',
+          'success'
+        ).then(() => {
+          // window.location.href = "/login";
+          navigate("/login");
+        })
+      }
+      setIsDataUploading(false);
     } else {
       data = {
         ...data,
@@ -389,22 +390,57 @@ function SignUpForm(props) {
         img: "",
         isAccept: false,
       };
+      // setRegistrationResult(register(data))
+      const status = register(data);
+      if (status) {
+        if (props.from === undefined) {
+          Swal.fire(
+            'Registration Success!',
+            'You clicked the button!',
+            'success'
+          ).then(() => {
+            // window.location.href = "/login";
+            navigate("/login");
+          })
+        } else if (props.from === "create_user") {
+          Swal.fire(
+            'Registration Success!',
+            'You clicked the button!',
+            'success'
+          ).then(() => {
+            navigate("/admin/manage-users");
+          })
+        }
+
+      }
+
+
       setIsDataUploading(false);
-      setRegistrationResult(register(data))
     }
   };
-  if (registrationResult) {
-    Swal.fire(
-      'Registration Success!',
-      'You clicked the button!',
-      'success'
-    ).then(() => {
-      navigate("/login");
-    })
-  }
+  // if (registrationResult) {
+  //   Swal.fire(
+  //     'Registration Success!',
+  //     'You clicked the button!',
+  //     'success'
+  //   ).then(() => {
+  //     navigate("/login");
+  //   })
+  // }
+  const districtPlaces = []
+  let cityPlaces = []
+  DistrictService.map((place) => (
+    districtPlaces.push(place.district)
+  ))
+  // console.log()
+  DistrictService.map((place) => {
+    if (city === place.district) {
+      cityPlaces = place.cities
+    }
+  })
   return (
     <div>
-      <BackDrop dataUploading={isDataUploading} />
+      {/* <BackDrop dataUploading={isDataUploading} /> */}
       <form onSubmit={clickRegister}>
         <div onClick={backButtonClicked}>
           <GoBackIcon show={selectedSignupButton !== ""} />
@@ -514,20 +550,39 @@ function SignUpForm(props) {
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={6}>
-            <TextField
+            <PlaceSelector
+              label="District"
+              value={city}
+              onChange={cityChangeHandler}
+              onBlur={cityBlurHandler}
+              cities={districtPlaces}
+              hasError={cityHasError}
+              error={cityError}
+            />
+            {/* <TextField
               required
               variant="standard"
-              label="City"
+              label="District"
               value={city}
               onChange={cityChangeHandler}
               onBlur={cityBlurHandler}
               error={cityHasError}
               helperText={cityHasError ? cityError : ""}
               fullWidth
-            />
+            /> */}
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <PlaceSelector
+              label="City"
+              value={town}
+              onChange={townChangeHandler}
+              onBlur={townBlurHandler}
+              cities={cityPlaces}
+              disabled={city === ""}
+              hasError={townHasError}
+              error={townError}
+            />
+            {/* <TextField
               required
               variant="standard"
               label="Town"
@@ -537,7 +592,7 @@ function SignUpForm(props) {
               error={townHasError}
               helperText={townHasError ? townError : ""}
               fullWidth
-            />
+            /> */}
           </Grid>
         </Grid>
         <Grid container sx={{ mb: 3 }} spacing={3}>
@@ -565,6 +620,7 @@ function SignUpForm(props) {
                 type="file"
                 id="file"
                 name="file"
+                path="/signup/charityProof"
                 onChange={setCharityFile}
               />
             </Grid>

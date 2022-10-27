@@ -7,109 +7,49 @@ import UpdatedButton from '../../ui/UpdatedButton'
 import BankDetailField from '../sell/BankDetailField'
 import UpdateProfileModal from './UpdateProfileModal'
 
-const DUMMY_USER = [
-    {
-        fieldId: "user-1",
-        fieldName: "First Name",
-        userDetail: "Lahiru"
-    },
-    {
-        fieldId: "user-2",
-        fieldName: "Last Name",
-        userDetail: "Perera"
-    },
-    {
-        fieldId: "user-3",
-        fieldName: "Phone Number",
-        userDetail: "0000000000"
-    },
-    {
-        fieldId: "user-4",
-        fieldName: "Address",
-        userDetail: "Lahiru"
-    },
-    {
-        fieldId: "user-5",
-        fieldName: "City",
-        userDetail: "Lahiru"
-    },
-    {
-        fieldId: "user-6",
-        fieldName: "Town",
-        userDetail: "Lahiru"
-    },
-
-]
 
 function ProfileDetails() {
     const user = useSelector((state) => state.user.currentUser);
     console.log(user);
-    let userData = [];
+    let userData = [
+        {
+            fieldId: "user-2",
+            fieldName: "User Name",
+            userDetail: user.username
+        },
+        {
+            fieldId: "user-3",
+            fieldName: "Phone Number",
+            userDetail: user.phone_number
+        },
+        {
+            fieldId: "user-4",
+            fieldName: "Address",
+            userDetail: user.address
+        },
+        {
+            fieldId: "user-5",
+            fieldName: "City",
+            userDetail: user.city
+        },
+        {
+            fieldId: "user-6",
+            fieldName: "Town",
+            userDetail: user.town
+        },
+    ]
     if (user.userrole === "Moderator" || user.userrole === "Advertiser") {
-        userData = [
-            {
-                fieldId: "user-2",
-                fieldName: "User Name",
-                userDetail: user.username
-            },
-            {
-                fieldId: "user-3",
-                fieldName: "Phone Number",
-                userDetail: user.phone_number
-            },
-            {
-                fieldId: "user-1",
-                fieldName: "Email",
-                userDetail: user.email
-            },
-            {
-                fieldId: "user-4",
-                fieldName: "Address",
-                userDetail: user.address
-            },
-            {
-                fieldId: "user-5",
-                fieldName: "City",
-                userDetail: user.city
-            },
-            {
-                fieldId: "user-6",
-                fieldName: "Town",
-                userDetail: user.town
-            },
-        ]
-    } else {
-        userData = [
-            {
-                fieldId: "user-2",
-                fieldName: "User Name",
-                userDetail: user.username
-            },
-            {
-                fieldId: "user-3",
-                fieldName: "Phone Number",
-                userDetail: user.phone_number
-            },
-            {
-                fieldId: "user-4",
-                fieldName: "Address",
-                userDetail: user.address
-            },
-            {
-                fieldId: "user-5",
-                fieldName: "City",
-                userDetail: user.city
-            },
-            {
-                fieldId: "user-6",
-                fieldName: "Town",
-                userDetail: user.town
-            },
+        userData = [...userData,
+        {
+            fieldId: "user-1",
+            fieldName: "Email",
+            userDetail: user.email
+        }
         ]
     }
 
     return (
-        <Box  sx={{ p: 5 }}>
+        <Box sx={{ p: 5 }}>
             <Grid container spacing={3}>
                 {userData.map((user) => (
                     <Grid key={user.fieldId} item xs={12}>

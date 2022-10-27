@@ -11,31 +11,42 @@ import SearchBar from '../ui/Searchbar';
 import CenteredBox from '../ui/CenteredBox';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import CloseIcon from '../ui/CloseIcon';
-const DUMMY_CONTACT = [
-    {
-        id: 60,
-        label: 'Pasindu Lakmal',
-        person: 'images/tutors/tutor-2.png',
-    },
-    {
-        id: 62,
-        label: 'Supun Banuka',
-        person: 'images/tutors/tutor-3.png',
-    },
-    {
-        id: 63,
-        label: 'Mahinda Rajapaksha',
-        person: 'images/tutors/tutor-1.png',
-    },
-    {
-        id: 64,
-        label: 'Mia Malkova',
-        person: 'images/tutors/tutor-2.png',
-    },
-]
+import { getUsers } from '../../store/userApiCalls';
+import { useDispatch, useSelector } from 'react-redux';
+// const DUMMY_CONTACT = [
+//     {
+//         id: 60,
+//         label: 'Pasindu Lakmal',
+//         person: 'images/tutors/tutor-2.png',
+//     },
+//     {
+//         id: 62,
+//         label: 'Supun Banuka',
+//         person: 'images/tutors/tutor-3.png',
+//     },
+//     {
+//         id: 63,
+//         label: 'Mahinda Rajapaksha',
+//         person: 'images/tutors/tutor-1.png',
+//     },
+//     {
+//         id: 64,
+//         label: 'Mia Malkova',
+//         person: 'images/tutors/tutor-2.png',
+//     },
+// ]
 
 export default function Contacts(props) {
     const [active, setActive] = React.useState(-1);
+
+    const currentUserId = useSelector((state) => state.user.currentUser.id);
+    const otherUsers = useSelector((state) => state.user.otherUsers.filter((x) => x.id != currentUserId && (x.userrole == "Farmer" || x.userrole == "Buyer" || x.userrole == "AgriExpert")));
+    const token = useSelector((state) => state.user.token);
+    const dispatch = useDispatch();
+    console.log(otherUsers);
+    console.log(currentUserId);
+
+
     const selectItem = (id, name) => {
         setActive(id)
         props.onSelect();
@@ -46,6 +57,7 @@ export default function Contacts(props) {
     const searchHandler = (e) => {
         setSearchItem(e.target.value)
     }
+
     return (
         <List sx={{ height: "300px", width: "300px", overflowY: "auto", bgcolor: "#FFF" }}>
             <Autocomplete
@@ -53,7 +65,7 @@ export default function Contacts(props) {
                 freeSolo
                 id="free-solo-2-demo"
                 disableClearable
-                options={DUMMY_CONTACT.map((option) => option.label)}
+                options={otherUsers.map((option) => option.username)}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -65,35 +77,35 @@ export default function Contacts(props) {
                     />
                 )}
             />
-            {searchItem === "" && DUMMY_CONTACT.map(({ id, label, person }) => (
-                <React.Fragment key={id} >
+            {searchItem === "" && otherUsers.map((user) => (
+                <React.Fragment key={user.id} >
                     <ListItem
                         button
-                        style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
-                        onClick={() => selectItem(id, label)}
+                        style={{ borderLeft: active == user.id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                        onClick={() => selectItem(user.id, user.username)}
                     >
                         <ListItemAvatar>
-                            <Avatar alt="Profile Picture" src={person} />
+                            <Avatar alt="Profile Picture" src={user.img} />
                         </ListItemAvatar>
-                        <ListItemText primary={<Typography sx={{ color: "#000" }}>{label}</Typography>} />
+                        <ListItemText primary={<Typography sx={{ color: "#000" }}>{user.username}</Typography>} secondary={user.userrole} />
                     </ListItem>
                     <Divider />
                 </React.Fragment>
             ))}
             {searchItem !== "" && (
-                DUMMY_CONTACT.map(({ id, label, secondary, person }) => {
+                otherUsers.map((user) => {
                     return (
-                        searchItem === label &&
-                        <React.Fragment key={id} >
+                        searchItem === user.username &&
+                        <React.Fragment key={user.id} >
                             <ListItem
                                 button
-                                style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
-                                onClick={() => selectItem(id, label)}
+                                style={{ borderLeft: active == user.id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                                onClick={() => selectItem(user.id, user.username)}
                             >
                                 <ListItemAvatar>
-                                    <Avatar alt="Profile Picture" src={person} />
+                                    <Avatar alt="Profile Picture" src={user.img} />
                                 </ListItemAvatar>
-                                <ListItemText primary={<Typography sx={{ color: "#000" }}>{label}</Typography>} />
+                                <ListItemText primary={<Typography sx={{ color: "#000" }}>{user.username}</Typography>} secondary={user.userrole} />
                             </ListItem>
                             <Divider />
                         </React.Fragment>

@@ -1,14 +1,16 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
-import React from "react";
+import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import classes from "../registraion/SignUpForm.module.css";
 import CenteredBox from "../ui/CenteredBox";
 import PasswordInputField from "../ui/PasswordInputField";
 
-import { login } from "../../store/userApiCalls";
+import { login, logOutUser } from "../../store/userApiCalls";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import CloseIcon from '@mui/icons-material/Close';
 import Swal from "sweetalert2";
+
 
 function SignInForm() {
   const navigate = useNavigate();
@@ -17,18 +19,23 @@ function SignInForm() {
   const [errorMessageEmail, setErrorMessageEmail] = useState("");
   const [errorMessagePassword, setErrorMessagePassword] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   const user = useSelector((state) => state.user.currentUser);
   let userError = useSelector((state) => state.user.error);
   let userType = useSelector((state) => state.user.userType);
   const dispatch = useDispatch();
 
-  const loginPress = async (e) => {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
+  useEffect(()=>{
+    logOutUser(dispatch);
+  },[]);
+
+  const loginPress = async () => {
+    // e.preventDefault();
+    // const data = new FormData(e.currentTarget);
     let userData = {
-      phone_number: data.get("phoneNumber"),
-      // password: data.get("password"),
+      // phone_number: data.get("phoneNumber"),
+      phone_number: email,
       password: password,
     };
     console.log(userData);
@@ -58,17 +65,19 @@ function SignInForm() {
           // window.location.href = "buyer/dashboard";
           navigate("/buyer/dashboard");
           loginSuccess();
+        } else if (userType === "Charity") {
+          // window.location.href = "buyer/dashboard";
+          navigate("/charity/dashboard");
+          loginSuccess();
+        } else if (userType === "Advertiser") {
+          // window.location.href = "buyer/dashboard";
+          navigate("/Advertiser/dashboard");
+          loginSuccess();
+        } else if (userType === "AgriExpert") {
+          // window.location.href = "buyer/dashboard";
+          navigate("/agriExpert/dashboard");
+          loginSuccess();
         }
-        // Swal.fire({
-        //   title: "Login Success!",
-        //   icon: "success",
-        //   confirmButtonColor: "#3085d6",
-        //   confirmButtonText: "Ok",
-        // }).then((result) => {
-        //   if (result.isConfirmed) {
-
-        //   }
-        // });
       } else {
         navigate("/login");
         Swal.fire({
@@ -80,15 +89,6 @@ function SignInForm() {
       }
       const TOKEN = JSON.parse(localStorage.getItem("accessToken"));
       console.log(TOKEN);
-      // setLoginErrorSet(userError);
-      // console.log(user);
-      // console.log(userError);
-      // if (userError) {
-      //   setLoginCancelShow(true);
-      //   // window.location.href = "http://localhost:3000/login";
-      // } else {
-      //   setLoginShow(true);
-      // }
     }
   };
 
@@ -102,11 +102,18 @@ function SignInForm() {
   };
 
   return (
-    <form onSubmit={loginPress}>
+    // <form onSubmit={loginPress}>
+    // <form>
+    <div>      
+      <CenteredBox align="right">
+        <IconButton onClick={() => { navigate("/") }}>
+          <CloseIcon />
+        </IconButton>
+      </CenteredBox>
       <Grid container sx={{ mb: 3, zIndex: 0 }}>
         <Grid item xs={12}>
           <CenteredBox align="center">
-            <Typography color="primary" variant="h4" sx={{p: 2}}>Welcome Back !</Typography>
+            <Typography color="primary" variant="h4" sx={{ p: 2 }}>Welcome Back !</Typography>
           </CenteredBox>
         </Grid>
         <Grid item xs={12}>
@@ -126,9 +133,10 @@ function SignInForm() {
             autoFocus
             helperText={errorMessageEmail}
             required
-            onChange={() => {
+            onChange={(e) => {
               setEmailError(false);
               setErrorMessageEmail("");
+              setEmail(e.target.value);
             }}
             error={emailError}
           ></TextField>
@@ -150,7 +158,7 @@ function SignInForm() {
           />
           <CenteredBox align="right">
             <p className={classes.text}>
-              <a onClick={() => {navigate("/forget-password")}}>Forget Password?</a>
+              <a onClick={() => { navigate("/forget-password") }}>Forget Password?</a>
             </p>
           </CenteredBox>
         </Grid>
@@ -161,6 +169,7 @@ function SignInForm() {
             variant="contained"
             fullWidth
             style={{ textTransform: "none", borderRadius: 10 }}
+            onClick={loginPress}
           >
             Sign In
           </Button>
@@ -179,7 +188,8 @@ function SignInForm() {
           </CenteredBox>
         </Grid>
       </Grid>
-    </form>
+    {/* </form> */}
+    </div>
   );
 }
 

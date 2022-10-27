@@ -19,8 +19,14 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { alpha, Autocomplete, Divider, InputBase, TextField } from '@mui/material';
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { storage, db } from "../../Firebase";
 import Test from './Test';
 import ContactList from './ContactList';
+import { useSelector } from 'react-redux';
+import BackDrop from '../ui/BackDrop';
+import ContainerLoading from '../ui/ContainerLoading';
+import LinearIndeterminate from '../ui/LinearIndeterminate';
 const StyledFab = styled(Fab)({
     position: 'absolute',
     zIndex: 1,
@@ -138,6 +144,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function ChatList(props) {
 
     const [active, setActive] = React.useState(-1);
+    const [conversationList, setConversationList] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
     const selectItem = (id, name) => {
         setActive(id)
         props.onClick();
@@ -149,9 +157,45 @@ export default function ChatList(props) {
         setSearchItem(e.target.value)
     }
 
+    const user = useSelector((state) => state.user.currentUser);
+    const userId = user.id;
+    console.log(user.userrole)
+    const otherUsers = useSelector((state) => state.user.otherUsers.filter((x) => x.id != userId && (x.userrole == "Farmer" || x.userrole == "Buyer" || x.userrole == "AgriExpert")));
+
+    const getMessages = async () => {
+        setIsLoading(true)
+        const q = query(collection(db, "messages"), orderBy('timestamp'));
+        const persons = []
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            if (doc.data().senderId === userId) {
+                const personExist = persons.find((user) => user.id === doc.data().receiverId)
+                if (!personExist) {
+                    const user = otherUsers.filter((x) => x.id === doc.data().receiverId);
+                    persons.push(user[0]);
+                }
+            } else if (doc.data().receiverId === userId) {
+                const personExist = persons.find((user) => user.id === doc.data().senderId)
+                if (!personExist) {
+                    const user = otherUsers.filter((x) => x.id === doc.data().senderId);
+                    persons.push(user[0]);
+                }
+            }
+        });
+        setConversationList(persons);
+        setIsLoading(false)
+    }
+    React.useEffect(() => {
+        getMessages();
+    }, [])
+
+    // if (isLoading) {
+    //     return <p>Loading .....</p>
+    // }
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
+            {/* <BackDrop dataUploading={true} /> */}
             <Paper square sx={{ pb: '50px', height: "400px", overflowY: "auto" }}>
                 <Box>
                     <Autocomplete
@@ -159,7 +203,7 @@ export default function ChatList(props) {
                         freeSolo
                         id="free-solo-2-demo"
                         disableClearable
-                        options={messages.map((option) => option.label)}
+                        options={conversationList.map((option) => option.username)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -171,52 +215,43 @@ export default function ChatList(props) {
                             />
                         )}
                     />
-                    {/* <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon sx={{ color: 'grey.400', }} />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search messages ..."
-                            inputProps={{ 'aria-label': 'search' }}
-                            onChange={searchHandler}
-                        />
-                    </Search> */}
                 </Box>
+                {isLoading && <LinearIndeterminate /> }
                 <Box sx={{
                     overflow: "hidden",
                 }}>
                     <List sx={{ mb: 2 }}>
                         {searchItem === "" && (
-                            messages.map(({ id, label, secondary, person }) => (
-                                <React.Fragment key={id} >
+                            conversationList.map((user) => (
+                                <React.Fragment key={user.id} >
                                     <ListItem
                                         button
-                                        style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
-                                        onClick={() => selectItem(id, label)}
+                                        style={{ borderLeft: active == user.id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                                        onClick={() => selectItem(user.id, user.username)}
                                     >
                                         <ListItemAvatar>
-                                            <Avatar alt="Profile Picture" src={person} />
+                                            <Avatar alt="Profile Picture" src={user.img} />
                                         </ListItemAvatar>
-                                        <ListItemText primary={label} secondary={secondary} />
+                                        <ListItemText primary={user.username} secondary={user.userrole} />
                                     </ListItem>
                                     <Divider />
                                 </React.Fragment>
                             )
                             ))}
                         {searchItem !== "" && (
-                            messages.map(({ id, label, secondary, person }) => {
+                            conversationList.map((user) => {
                                 return (
-                                    searchItem === label &&
-                                    <React.Fragment key={id} >
+                                    searchItem === user.username &&
+                                    <React.Fragment key={user.id} >
                                         <ListItem
                                             button
-                                            style={{ borderLeft: active == id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
-                                            onClick={() => selectItem(id, label)}
+                                            style={{ borderLeft: active == user.id ? '3px #3399FF solid' : '3px #FFFFFF solid' }}
+                                            onClick={() => selectItem(user.id, user.username)}
                                         >
                                             <ListItemAvatar>
-                                                <Avatar alt="Profile Picture" src={person} />
+                                                <Avatar alt="Profile Picture" src={user.img} />
                                             </ListItemAvatar>
-                                            <ListItemText primary={label} secondary={secondary} />
+                                            <ListItemText primary={user.username} secondary={user.userrole} />
                                         </ListItem>
                                         <Divider />
                                     </React.Fragment>

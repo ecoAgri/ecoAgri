@@ -65,6 +65,11 @@ export default function AddPostButton(props) {
                   </div>
                 </div>
               </Grid>
+              <Grid item xs={12}>
+                <CenteredBox align="right">
+                  <Button onClick={handleClose}>Set Location</Button>
+                </CenteredBox>
+              </Grid>
             </Grid>
           </div>
         </Box>

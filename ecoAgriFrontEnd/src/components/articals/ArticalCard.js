@@ -153,7 +153,7 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
-export default function ArticalCard() {
+export default function ArticalCard(props) {
     const [expanded, setExpanded] = React.useState(false);
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
@@ -190,19 +190,19 @@ export default function ArticalCard() {
                         R
                     </Avatar>
                 }
-                title="Shrimp and Chorizo Paella"
-                subheader="September 14, 2016"
+                title="Yohan Nayanajith"
+                subheader="October 22, 2022"
             />
             <Carousel
                 images={
                     [
                         {
-                            imgPath: "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80",
-                            label: "hello"
-                        },
-                        {
                             imgPath: "https://images.unsplash.com/photo-1501263418469-bcf7b079b4c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80",
                             label: "hello2"
+                        },
+                        {
+                            imgPath: "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80",
+                            label: "hello"
                         },
                         {
                             imgPath: "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80",
@@ -212,7 +212,7 @@ export default function ArticalCard() {
             />
             <CardContent>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    <b>This impressive paella is a perfect party</b>
+                    <b>{props.title}</b>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     This impressive paella is a perfect party dish and a fun meal to cook

@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { storage, auth, db } from "../../Firebase";
 import { useSelector } from "react-redux";
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
 
 const theme = createTheme({
     palette: {
@@ -36,26 +36,32 @@ function TextInput(props) {
     const [msg, setMsg] = useState('')
     const user = useSelector((state) => state.user.currentUser);
     const userId = user.id;
+    const receiverId = props.receiverId;
+    console.log(db);
+    
     async function sendMessage(e) {
         e.preventDefault()
         // const { uid, photoURL } = auth.currentUser
-
+        setMsg('')
         try {
             const docRef = await addDoc(collection(db, "messages"), {
-                id: `${userId}-3`,
+                id: `${userId}-${receiverId}`,
                 text: msg,
                 senderId: userId,
-                receiverId: 5,
+                receiverId: receiverId,
+                // uid,
+                timestamp: serverTimestamp(),
                 // photoURL,
                 // uid,
-                // createdAt: db.
+                // createdAt: 
             });
             console.log("Document written with ID: ", docRef.id);
+            props.setMessageSend();
           } catch (e) {
             console.error("Error adding document: ", e);
           }
-        setMsg('')
-        props.scroll.current.scrollIntoView({ behavior: 'smooth' })
+        
+        // props.scroll.current.scrollIntoView({ behavior: 'smooth' })
     }
     return (
         <ThemeProvider theme={theme}>

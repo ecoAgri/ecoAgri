@@ -72,8 +72,11 @@ import LogoCom from '../Landing/LogoCom';
 
 
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import CloseIcon from '@mui/icons-material/Close';
 import { Grid, IconButton } from '@mui/material';
 import LandingAppBar from '../Landing/LandingAppBar';
+import CenteredBox from '../ui/CenteredBox';
+import { useNavigate } from 'react-router';
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
@@ -118,6 +121,7 @@ export default function Registration() {
     setActiveStep(activeStep - 1);
   };
 
+  const navigate = useNavigate();
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -127,11 +131,16 @@ export default function Registration() {
         <CssBaseline />
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
           <Paper variant="outlined"
-           sx={{
-            my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 }, 
-            boxShadow: 24,
-            borderRadius: 2,
-          }}>
+            sx={{
+              my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 },
+              boxShadow: 24,
+              borderRadius: 2,
+            }}>
+            <CenteredBox align="right">
+              <IconButton onClick={() => { navigate("/") }}>
+                <CloseIcon />
+              </IconButton>
+            </CenteredBox>
             {activeStep !== 0 && (
               <IconButton onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
                 <KeyboardArrowLeftIcon />

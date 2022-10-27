@@ -73,7 +73,7 @@ export default function MainTab(props) {
                         sx={{ minWidth: 0, p: 0 }}
                         value={2}
                         component={Link}
-                        to={"/buy"}
+                        to={"/farmer/buy"}
                         label={<Button style={{ textTransform: "none" }} variant={props.value === 2 ? "contained" : ""}>Buy</Button>}
                     />
                     <Tab
@@ -111,6 +111,52 @@ export default function MainTab(props) {
                         value={1}
                         component={Link}
                         to={"/buyer/profile"}
+                        icon={<Avatar></Avatar>}
+                    />
+                </Tabs>
+            }
+            {userType === "Charity" &&
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    textColor="primary"
+                    indicatorColor="primary"
+                >
+                    <Tab
+                        sx={{ minWidth: 0, p: 0 }}
+                        value={0}
+                        component={Link}
+                        to={"/charity/dashboard"}
+                        label={<Button style={{ textTransform: "none" }} variant={props.value === 0 ? "contained" : ""}>Home</Button>}
+                    />
+                    <Tab
+                        sx={{ minWidth: 0 }}
+                        value={1}
+                        component={Link}
+                        to={"/charity/profile"}
+                        icon={<Avatar></Avatar>}
+                    />
+                </Tabs>
+            }
+            {userType === "Advertiser" &&
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    textColor="primary"
+                    indicatorColor="primary"
+                >
+                    <Tab
+                        sx={{ minWidth: 0, p: 0 }}
+                        value={0}
+                        component={Link}
+                        to={"/advertiser/dashboard"}
+                        label={<Button style={{ textTransform: "none" }} variant={props.value === 0 ? "contained" : ""}>Home</Button>}
+                    />
+                    <Tab
+                        sx={{ minWidth: 0 }}
+                        value={1}
+                        component={Link}
+                        to={"/advertiser/profile"}
                         icon={<Avatar></Avatar>}
                     />
                 </Tabs>

@@ -14,6 +14,7 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import "./GoogleMapContainer.css";
 import axios from "axios";
 import AddProductContext from '../../context/AddProduct-context';
+import CenteredBox from '../ui/CenteredBox';
 
 const style = {
   position: 'absolute',
@@ -25,6 +26,17 @@ const style = {
   p: 2,
   width: 450
 };
+
+const style2 = {
+  position: 'absolute',
+  top: '15%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  zIndex: 1,
+  bgcolor: 'background.paper',
+  p: 2,
+  width: 100
+}
 const API_KEY = "AIzaSyALcSlRXEsNoL2uMQtEx9x01OUAiXnbAj0"
 
 function setLocationAddress(lat, lng, locationType) {
@@ -46,7 +58,17 @@ function GoogleMapContainer(props) {
   //product location here
   const [destination, setDestination] = useState({ lng: 79.88389509223174, lat: 6.872037471140445 });
 
+  useEffect(()=>{
+    const setLocation = ()=>{
+      setDestination({
+        lng: props.longitude, lat: props.latitude
+      });
+    }
+    setLocation();
+  },[]);
+
   const setPath = async () => {
+    
     navigator.geolocation.getCurrentPosition((position) => {
       setCenter({
         lat: position.coords.latitude,
@@ -125,7 +147,7 @@ function GoogleMapContainer(props) {
   }
 
   const markerChangeHandler = (e) => {
-    setCenter({lat: e.latLng.lat(), lng: e.latLng.lng()})
+    setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() })
     ctx.setLiveLocation({
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
@@ -164,65 +186,91 @@ function GoogleMapContainer(props) {
           <DirectionsRenderer directions={directionsResponse} />
         )}
       </GoogleMap>
-      <Box sx={style}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Autocomplete>
-              <TextField
-                style={{ zIndex: 2000 }}
-                type='text'
-                placeholder='Origin'
-                inputRef={originRef}
-                variant="standard"
-              />
-            </Autocomplete>
+      {props.mapType !== "get_live_location" ? (
+        <Box sx={style}>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <Autocomplete>
+                <TextField
+                  style={{ zIndex: 2000 }}
+                  type='text'
+                  placeholder='Origin'
+                  inputRef={originRef}
+                  variant="standard"
+                />
+              </Autocomplete>
+            </Grid>
+            <Grid item xs={5}>
+              <Autocomplete>
+                <TextField
+                  type='text'
+                  placeholder='Destination'
+                  inputRef={destiantionRef}
+                  variant="standard"
+                />
+              </Autocomplete>
+            </Grid>
+            <Grid item xs={2}>
+              <Button sx={{ p: "3px" }} variant="outlined" style={{ textTransform: "none" }} type='submit' onClick={() => { calculateRoute(originRef.current.value, destiantionRef.current.value) }}>
+                Distance
+              </Button>
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton sx={{ p: "3px" }} onClick={clearRoute}>
+                <CloseIcon />
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item xs={5}>
-            <Autocomplete>
-              <TextField
-                type='text'
-                placeholder='Destination'
-                inputRef={destiantionRef}
-                variant="standard"
-              />
-            </Autocomplete>
+          <Grid container sx={{ mt: 2 }}>
+            <Grid item xs={4}>
+              <Typography>Distance: {distance} </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>Duration: {duration} </Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <IconButton
+                sx={{ p: "3px" }}
+                onClick={() => {
+                  map.panTo(center)
+                  map.setZoom(15)
+                }}
+              >
+                <NavigationIcon />
+              </IconButton>
+            </Grid>
+            <Grid item xs={2}>
+              <IconButton sx={{ p: "3px" }} onClick={getLiveLocation}>
+                <GpsFixedIcon />
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item xs={2}>
-            <Button sx={{ p: "3px" }} variant="outlined" style={{ textTransform: "none" }} type='submit' onClick={() => { calculateRoute(originRef.current.value, destiantionRef.current.value) }}>
-              Distance
-            </Button>
+        </Box>
+      ) : (
+        <Box sx={style2}>
+          <Grid container>
+            <Grid item xs={6}>
+              <IconButton
+                sx={{ p: "3px" }}
+                onClick={() => {
+                  map.panTo(center)
+                  map.setZoom(15)
+                }}
+              >
+                <NavigationIcon />
+              </IconButton>
+            </Grid>
+            <Grid item xs={6}>
+              <CenteredBox align="right">
+                <IconButton sx={{ p: "3px" }} onClick={getLiveLocation}>
+                  <GpsFixedIcon />
+                </IconButton>
+              </CenteredBox>
+            </Grid>
           </Grid>
-          <Grid item xs={1}>
-            <IconButton sx={{ p: "3px" }} onClick={clearRoute}>
-              <CloseIcon />
-            </IconButton>
-          </Grid>
-        </Grid >
-        <Grid container sx={{ mt: 2 }}>
-          <Grid item xs={4}>
-            <Typography>Distance: {distance} </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography>Duration: {duration} </Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <IconButton
-              sx={{ p: "3px" }}
-              onClick={() => {
-                map.panTo(center)
-                map.setZoom(15)
-              }}
-            >
-              <NavigationIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={2}>
-            <IconButton sx={{ p: "3px" }} onClick={getLiveLocation}>
-              <GpsFixedIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      )
+      }
     </Box>
 
   )

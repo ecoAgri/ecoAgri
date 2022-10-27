@@ -6,8 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Typography } from "@mui/material";
 import CenteredBox from "../../ui/CenteredBox";
 import { useNavigate } from "react-router";
-import { saveAmount } from "../../../store/orderApiCalls";
+import { saveAmount, updateOrder } from "../../../store/orderApiCalls";
 import Swal from "sweetalert2";
+import { updateProduct } from "../../../store/productApiCalls";
 // import Carousel from '../ui/Carousel/Carousel';
 
 const style = {
@@ -29,13 +30,61 @@ export default function BuyingModal(props) {
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.currentUser);
+  const token = useSelector((state) => state.user.token);
   const selectOneProduct = useSelector((state) =>
     state.product.products.filter((x) => x.id == props.productId)
   );
   const userType = user.userrole;
   const dispatch = useDispatch();
+  console.log(props);
 
-  const onlinePayment = () => {
+  const cashPayment = async() =>{
+    try {
+      let response = await fetch(`http://localhost:5000/api/payment/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: props.amount,
+          clientSecret: 123,
+          shipping: 25.36,
+          status:"Cash",
+          UserID: user.id,
+          isSuccess: false,
+        }),
+      });
+      let json = await response.json();
+
+      const productStatus = await updateProduct(props.productId, {weight:selectOneProduct[0].weight - props.quantity}, dispatch, token);
+      const orderStatus = await updateOrder(props.id, {status:"Completed"}, dispatch, token);
+
+      if(productStatus && orderStatus){
+        console.log("Success");
+        navigate("/buyer/buy-details");
+      }else{
+        console.log("Unsuccess")
+      }
+
+      console.log(json);
+      Swal.fire({
+        icon: "success",
+        title: "Payment Success!",
+        showConfirmButton: true,
+      });
+      // alert("Update");
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        text: "Payment Unsuccess!",
+        showConfirmButton: true,
+      });
+    } 
+  }
+
+  const onlinePayment = async () => {
     alert("Online Payment");
     console.log(props.amount);
     console.log(props.quantity);
@@ -57,6 +106,11 @@ export default function BuyingModal(props) {
         props.productId,
         props.id
       );
+
+      // const updateSuccess = await updateProduct(props.productId, {weight:selectOneProduct[0].weight - props.quantity}, dispatch, token);
+      // if(updateSuccess){
+      //   console.log("Success");
+      // }
       navigate("/buyer/payment", { Amount: props.amount });
     }
   };
@@ -80,7 +134,7 @@ export default function BuyingModal(props) {
             </Grid>
             <Grid item xs={12}>
               <CenteredBox align="center">
-                <Button style={{ textTransform: "none" }} variant="outlined">
+                <Button style={{ textTransform: "none" }} variant="outlined" onClick={cashPayment}>
                   Cash Payment
                 </Button>
               </CenteredBox>

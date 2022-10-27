@@ -39,6 +39,7 @@ export default function AddPostButton(props) {
     } = UseImageOneInput(() => { })
 
     console.log(postImagePreview)
+    console.log(postImageData)
     return (
         <div>
             <Button fullWidth sx={{ p: 2 }} variant="outlined" onClick={handleOpen}>Add Post</Button>

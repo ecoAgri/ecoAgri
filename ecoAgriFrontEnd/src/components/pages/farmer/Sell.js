@@ -9,8 +9,11 @@ import CenteredBox from '../../ui/CenteredBox';
 import PageHeading from '../../ui/PageHeading';
 import classes from '../../ui/HideScrollBar.module.css';
 import ProductsSale from '../../farmer/sell/ProductsSale';
+import { useDispatch, useSelector } from "react-redux";
 
 function Sell() {
+
+  
   return (
     <React.Fragment>
       <MainHeader value={1} />

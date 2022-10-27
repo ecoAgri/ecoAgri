@@ -18,7 +18,7 @@ export const MessageRight = (props) => {
                 <ListItem key="1" sx={{}}>
                     <Grid container >
                         <Grid item xs={12}>
-                            <ListItemText align="right" primary={message}></ListItemText>
+                            <ListItemText align="right" primary={message} secondary={props.timestamp}></ListItemText>
                         </Grid>
                         {/* <Grid item xs={12}>
                             <ListItemText align="right" secondary={timestamp}></ListItemText>
@@ -39,7 +39,7 @@ export const MessageLeft = (props) => {
                 <ListItem key="2" style={{marginLeft:"2px", background:"#93ffbf", width:"fit-content", borderRadius:"10px"}}>
                     <Grid container>
                         <Grid item xs={12}>
-                            <ListItemText align="left"  primary={message} ></ListItemText>
+                            <ListItemText align="left" primary={message} secondary={props.timestamp} ></ListItemText>
                         </Grid>
                         {/* <Grid item xs={12}>
                             <ListItemText align="left" secondary={timestamp}></ListItemText>

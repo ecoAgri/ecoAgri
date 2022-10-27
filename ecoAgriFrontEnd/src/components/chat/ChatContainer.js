@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Grid, IconButton, Typography } from '@mui/material';
 // import Carousel from '../ui/Carousel/Carousel';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -10,6 +10,7 @@ import CenteredBox from '../ui/CenteredBox';
 import CloseIcon from '../ui/CloseIcon';
 import Coverstaions from './Coverstaions';
 import Test from './Test';
+import { getUsers } from '../../store/userApiCalls';
 
 const style = {
     position: 'absolute',
@@ -33,6 +34,18 @@ export default function ChatContainer(props) {
     const handleClose = () => setOpen(false);
     const user = useSelector((state) => state.user.currentUser);
     const userType = user.userrole;
+    const token = useSelector((state) => state.user.token);
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        const getAllUsers = async () => {
+            const newUsers = await getUsers(dispatch, token);
+            if (newUsers) {
+                // alert("hi")
+            }
+        }
+        getAllUsers();
+    }, []);
 
     return (
         <div>

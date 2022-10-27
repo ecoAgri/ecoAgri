@@ -1,21 +1,40 @@
-import React, { useState } from 'react'
-import { Button, Checkbox, FilledInput, FormControl, FormControlLabel, FormHelperText, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, TextField, Typography } from '@mui/material';
-import { Box } from '@mui/system'
-import CenteredBox from '../../ui/CenteredBox';
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Checkbox,
+  FilledInput,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Box } from "@mui/system";
+import CenteredBox from "../../ui/CenteredBox";
 import classes from "../../ui/Form.module.css";
 import useInput from "../../../hooks/use-input";
-import UploadProduct from './UploadProduct';
-import SetLocationModal from './SetLocationModal';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import UploadProduct from "./UploadProduct";
+import SetLocationModal from "./SetLocationModal";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import Swal from "sweetalert2";
-import { storage } from '../../../Firebase';
+import { storage } from "../../../Firebase";
 import { v4 } from "uuid";
-import { async } from '@firebase/util';
-import AddProductContext from '../../../context/AddProduct-context';
-import { addProduct } from '../../../store/productApiCalls';
+import { async } from "@firebase/util";
+import AddProductContext from "../../../context/AddProduct-context";
+import { addProduct, updateProduct } from "../../../store/productApiCalls";
 import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useNavigate } from "react-router";
+import PlaceSelector from "../../registraion/PlaceSelector";
+import DistrictService from "../../../services/DistrictService";
 
 function AddProductForm(props) {
+  const navigate = useNavigate();
   const style = {
     // position: 'absolute',
     // top: '50%',
@@ -23,7 +42,7 @@ function AddProductForm(props) {
     // transform: 'translate(-50%, -50%)',
     width: props.width,
     // height: 505,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
     // overflow: "auto",
     border: "none",
     // boxShadow: 24,
@@ -39,11 +58,13 @@ function AddProductForm(props) {
   // console.log(productImages);
   let {
     value: productName,
+    setValue: productSetValue,
     isValid: productNameIsValid,
     hasError: productNameHasError,
     error: productNameError,
     valueChangeHandler: productNameChangeHandler,
     inputBlurHandler: productNameBlurHandler,
+    reset: productNameResetHandler,
   } = useInput((value) => {
     if (value.trim() === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
@@ -52,19 +73,21 @@ function AddProductForm(props) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: productCategory,
+    setValue: productCategorySetValue,
     isValid: productCategoryIsValid,
     hasError: productCategoryHasError,
     error: productCategoryError,
     valueChangeHandler: productCategoryChangeHandler,
     inputBlurHandler: productCategoryBlurHandler,
+    reset: productCategoryResetHandler,
   } = useInput((value) => {
     if (value === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
@@ -73,61 +96,67 @@ function AddProductForm(props) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: weight,
+    setValue: weightSetValue,
     isValid: weightIsValid,
     hasError: weightHasError,
     error: weightError,
     valueChangeHandler: weightChangeHandler,
     inputBlurHandler: weightBlurHandler,
+    reset: weightResetHandler,
   } = useInput((value) => {
-    if (value.trim() === "") {
+    if (value === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
     }
     // else if (hasNumber(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: unitPrice,
+    setValue: unitPriceSetValue,
     isValid: unitPriceIsValid,
     hasError: unitPriceHasError,
     error: unitPriceError,
     valueChangeHandler: unitPriceChangeHandler,
     inputBlurHandler: unitPriceBlurHandler,
+    reset: unitPriceResetHandler,
   } = useInput((value) => {
-    if (value.trim() === "") {
+    if (value === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
     }
     // else if (hasNumber(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: manuDate,
+    setValue: manuDateSetValue,
     isValid: manuDateIsValid,
     hasError: manuDateHasError,
     error: manuDateError,
     valueChangeHandler: manuDateChangeHandler,
     inputBlurHandler: manuDateBlurHandler,
+    reset: manuDateResetHandler,
   } = useInput((value) => {
     if (value.trim() === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
@@ -136,19 +165,21 @@ function AddProductForm(props) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: expireDate,
+    setValue: expireDateSetValue,
     isValid: expireDateIsValid,
     hasError: expireDateHasError,
     error: expireDateError,
     valueChangeHandler: expireDateChangeHandler,
     inputBlurHandler: expireDateBlurHandler,
+    reset: expireDateResetHandler,
   } = useInput((value) => {
     if (value.trim() === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
@@ -157,19 +188,21 @@ function AddProductForm(props) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
   let {
     value: fieldAddress,
+    setValue: fieldAddressSetValue,
     isValid: fieldAddressIsValid,
     hasError: fieldAddressHasError,
     error: fieldAddressError,
     valueChangeHandler: fieldAddressChangeHandler,
     inputBlurHandler: fieldAddressBlurHandler,
+    reset: fieldAddressResetHandler,
   } = useInput((value) => {
     if (value.trim() === "") {
       return { inputIsValid: false, error: "Can't be Empty !" };
@@ -178,12 +211,64 @@ function AddProductForm(props) {
     //   return { inputIsValid: false, error: "Can't contained numbers !" };
     // } else if (hasSpecialChars(value.trim())) {
     //   return { inputIsValid: false, error: "Can't contained special chars !" };
-    // } 
+    // }
     else {
       return { inputIsValid: true, error: "" };
     }
-  })
+  });
 
+  const {
+    value: town,
+    setValue: townSetValue,
+    isValid: townIsValid,
+    hasError: townHasError,
+    error: townError,
+    valueChangeHandler: townChangeHandler,
+    inputBlurHandler: townBlurHandler,
+  } = useInput((value) => {
+    if (value === "") {
+      return { inputIsValid: false, error: "Can't be Empty !" };
+    }
+    // else if (hasNumber(value.trim())) {
+    //   return { inputIsValid: false, error: "Can't contained numbers !" };
+    // } else if (hasSpecialChars(value.trim())) {
+    //   return { inputIsValid: false, error: "Can't contained special chars !" };
+    // }
+    else {
+      return { inputIsValid: true, error: "" };
+    }
+  });
+
+  const {
+    value: city,
+    setValue: citySetValue,
+    isValid: cityIsValid,
+    hasError: cityHasError,
+    error: cityError,
+    valueChangeHandler: cityChangeHandler,
+    inputBlurHandler: cityBlurHandler,
+  } = useInput((value) => {
+    if (value === "") {
+      return { inputIsValid: false, error: "Can't be Empty !" };
+    }
+    // else if (hasNumber(value.trim())) {
+    //   return { inputIsValid: false, error: "Can't contained numbers !" };
+    // } else if (hasSpecialChars(value.trim())) {
+    //   return { inputIsValid: false, error: "Can't contained special chars !" };
+    // }
+    else {
+      return { inputIsValid: true, error: "" };
+    }
+  });
+  const resetForm = () => {
+    productNameResetHandler();
+    productCategoryResetHandler();
+    weightResetHandler();
+    unitPriceResetHandler();
+    manuDateResetHandler();
+    expireDateResetHandler();
+    fieldAddressResetHandler();
+  };
 
   const [productImages, setProductImages] = useState([]);
   const [productImageUrls, setProductImageUrls] = useState([]);
@@ -197,38 +282,81 @@ function AddProductForm(props) {
   const deleteImageHandler = () => {
     const images = productImages;
     setProductImages(images);
-    console.log("deleted")
-  }
+    console.log("deleted");
+  };
 
   const [liveLocation, setLiveLocation] = useState(null);
+  const [checked, setChecked] = useState(false);
+  const locationSetHandler = (event) => {
+    setChecked(event.target.checked);
+  };
   console.log(liveLocation);
   let formIsValid = false;
 
-  if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && unitPriceIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "sellProduct")) {
+  if (
+    liveLocation !== null &&
+    productNameIsValid &&
+    productCategoryIsValid &&
+    weightIsValid &&
+    unitPriceIsValid &&
+    manuDateIsValid &&
+    expireDateIsValid &&
+    fieldAddressIsValid &&
+    cityIsValid &&
+    townIsValid &&
+    productImages.length !== 0 &&
+    props.productType === "sellProduct" &&
+    checked
+  ) {
     formIsValid = true;
-  } else if ((liveLocation !== null) && productNameIsValid && productCategoryIsValid && weightIsValid && manuDateIsValid && expireDateIsValid && fieldAddressIsValid && (productImages.length !== 0) && (props.productType === "donateProduct")) {
+  } else if (
+    liveLocation !== null &&
+    productNameIsValid &&
+    productCategoryIsValid &&
+    weightIsValid &&
+    manuDateIsValid &&
+    expireDateIsValid &&
+    fieldAddressIsValid &&
+    cityIsValid &&
+    townIsValid &&
+    productImages.length !== 0 &&
+    props.productType === "donateProduct" &&
+    checked
+  ) {
     formIsValid = true;
   }
+  useEffect(() => {
+    if (props.productName !== undefined) {
+      productSetValue(props.productName);
+    }
+    if (props.productCategory !== undefined) {
+      productCategorySetValue(props.productCategory);
+    }
+    if (props.manuDate !== undefined) {
+      manuDateSetValue(props.manuDate);
+    }
+    if (props.expireDate !== undefined) {
+      expireDateSetValue(props.expireDate);
+    }
+    if (props.fieldAddress !== undefined) {
+      fieldAddressSetValue(props.fieldAddress);
+    }
+    // console.log(props.weight)
+    if (props.weight !== undefined) {
+      weightSetValue(props.weight);
+    }
+    if (props.city !== undefined) {
+      citySetValue(props.city);
+    }
+    if (props.town !== undefined) {
+      townSetValue(props.town);
+    }
+    if (props.unitPrice !== undefined) {
+      unitPriceSetValue(props.unitPrice);
+    }
+  }, []);
 
-  if (props.productName !== undefined) {
-    productName = props.productName;
-  }
-  if (props.productCategory !== undefined) {
-    productCategory = props.productCategory;
-  }
-  if (props.manuDate !== undefined) {
-    manuDate = props.manuDate;
-  }
-  if (props.expireDate !== undefined) {
-    expireDate = props.expireDate;
-  }
-  if (props.fieldAddress !== undefined) {
-    fieldAddress = props.fieldAddress;
-  }
-  if (props.weight !== undefined) {
-    weight = props.weight;
-  }
-
+  console.log(productImages);
   const onSubmitHandler = async (e) => {
     console.log(liveLocation);
 
@@ -242,101 +370,92 @@ function AddProductForm(props) {
     let imagUrls = [];
     console.log(productImages);
     let count = 0;
-    for (var i = 0; i < productImages.length; i++) {
-      imagePath.push(`images/products/${productImages[i].file.name + v4()}`);
-      imageRef.push(ref(storage, imagePath[i]));
-      uploadTask = uploadBytesResumable(imageRef[i], productImages[i].file);
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Uploading progress is " + progress);
-        },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Something went wrong !',
-          })
-        },
-        async () => {
-          console.log(uploadTask.snapshot);
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              imagUrls.push(downloadURL);
-              setProductImageUrls(imagUrls)
-              console.log(imagUrls);
+    const data = {
+      productName: productName,
+      productCategory: productCategory,
+      weight: weight,
+      unitPrice: props.productType === "sellProduct" ? unitPrice : 0,
+      fieldAddress: fieldAddress,
+      manuDate: manuDate,
+      expireDate: expireDate,
+      status: "Pending",
+      isAccept: true,
+      location: town,
+      district: city,
+      latitude: liveLocation.lat,
+      longitude: liveLocation.lng,
+      isDonate: props.productType === "sellProduct" ? false : true,
+      priceUOM: "Rs.",
+      sellerId: user.id,
+      sellerName: user.username,
+      sellerContact: user.phone_number,
+      weightUOM: "Kg",
+      image1: productImages.length >= 1 ? productImages[0].url : null,
+      image2: productImages.length >= 2 ? productImages[1].url : null,
+      image3: productImages.length >= 3 ? productImages[2].url : null,
+      image4: productImages.length >= 4 ? productImages[3].url : null,
 
-              const data = {
-                productName: productName,
-                productCategory: productCategory,
-                weight: weight,
-                unitPrice: props.productType === "sellProduct" ? unitPrice : 0,
-                fieldAddress:fieldAddress,
-                manuDate: manuDate,
-                expireDate: expireDate,
-                status:"Pending",
-                isAccept: true,
-                location:"Malabe",
-                latitude: liveLocation.lat,
-                longitude: liveLocation.lng,
-                isDonate: props.productType === "sellProduct" ? false : true,
-                priceUOM:"Rs.",
-                sellerId:user.id,
-                sellerName:user.username,
-                sellerContact:user.phone_number,
-                weightUOM:"Kg",
-                image1:imagUrls[0],
-                image2:imagUrls[1],
-                image3:imagUrls[2],
-                image4:imagUrls[3]
-          
-                // images: productImageUrls.map((image) => {
-                //   return image
-                // })
-              };
-          
-              console.log(data);
-              const productDataSave = addProduct(data,dispatch,token);
-              if(productDataSave){
-                Swal.fire({
-                  icon: "success",
-                  title: "Product Save Successful!",
-                  showConfirmButton: true,
-                });
-              }else {
-                Swal.fire({
-                  icon: "error",
-                  text: "Product Save Unsuccess!",
-                  showConfirmButton: true,
-                });
-              }
-
-              console.log(imagUrls);
-            }
-            ).catch((error) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong !',
-              })
-            });
-        }
-      )
-      setImageUploadingCount(i + 1)
+      // images: productImageUrls.map((image) => {
+      //   return image
+      // })
+    };
+    if (props.formType != "update") {
+      const productDataSave = addProduct(data, dispatch, token);
+      if (productDataSave) {
+        resetForm();
+        Swal.fire({
+          icon: "success",
+          title: "Product Save Successful!",
+          showConfirmButton: true,
+        }).then(() => {
+          navigate("/sell");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: "Product Save Unsuccess!",
+          showConfirmButton: true,
+        });
+      }
+    } else {
+      // id, product, dispatch, token
+      const productDataUpdate = updateProduct(props.id, data, dispatch, token);
+      if (productDataUpdate) {
+        resetForm();
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "Product Update Successful!",
+        //   showConfirmButton: true,
+        // }).then(() => {
+        //   navigate("/sell");
+        // });
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: "Product Update Unsuccess!",
+          showConfirmButton: true,
+        });
+      }
     }
-
-    if (imageUploadingCount === productImages.length) {
-      console.log(productImageUrls);
+  };
+  const districtPlaces = [];
+  let cityPlaces = [];
+  DistrictService.map((place) => districtPlaces.push(place.district));
+  // console.log()
+  DistrictService.map((place) => {
+    if (city === place.district) {
+      cityPlaces = place.cities;
     }
-    //api call here
-  }
+  });
   return (
-    <AddProductContext.Provider value={{
-      productImages: productImages,
-      liveLocation: liveLocation,
-      setLiveLocation: setLiveLocation,
-      setProductImages: setProductImages
-    }}>
+    <AddProductContext.Provider
+      value={{
+        productImages: productImages,
+        liveLocation: liveLocation,
+        setLiveLocation: setLiveLocation,
+        setProductImages: setProductImages,
+      }}
+    >
       <Box sx={style}>
         <form onSubmit={onSubmitHandler} noValidate>
           <Grid container sx={{ mb: 3 }}>
@@ -376,12 +495,21 @@ function AddProductForm(props) {
                   <MenuItem value={"Fruits"}>Fruit</MenuItem>
                   <MenuItem value={"Vegetable"}>Vegetable</MenuItem>
                 </Select>
-                <FormHelperText>{productCategoryHasError ? productCategoryError : ""}</FormHelperText>
+                <FormHelperText>
+                  {productCategoryHasError ? productCategoryError : ""}
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={6}>
-              <FormControl variant="outlined" fullWidth required error={weightHasError}>
-                <InputLabel htmlFor="outlined-adornment-password">Weight</InputLabel>
+              <FormControl
+                variant="outlined"
+                fullWidth
+                required
+                error={weightHasError}
+              >
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Weight
+                </InputLabel>
                 <OutlinedInput
                   type="number"
                   value={weight}
@@ -392,11 +520,13 @@ function AddProductForm(props) {
                   }
                   label="Weight"
                 />
-                <FormHelperText>{weightHasError ? weightError : ""}</FormHelperText>
+                <FormHelperText>
+                  {weightHasError ? weightError : ""}
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={6}>
-              {props.productType === "sellProduct" &&
+              {props.productType === "sellProduct" && (
                 <TextField
                   fullWidth
                   required
@@ -409,32 +539,50 @@ function AddProductForm(props) {
                   error={unitPriceHasError}
                   helperText={unitPriceHasError ? unitPriceError : ""}
                 />
-              }
+              )}
             </Grid>
             <Grid item xs={6}>
-              <InputLabel htmlFor="outlined-adornment-password">Manufacture date*</InputLabel>
-              <FormControl variant="outlined" fullWidth required error={manuDateHasError}>
+              <InputLabel htmlFor="outlined-adornment-password">
+                Manufacture date*
+              </InputLabel>
+              <FormControl
+                variant="outlined"
+                fullWidth
+                required
+                error={manuDateHasError}
+              >
                 <OutlinedInput
                   type="date"
                   value={manuDate}
                   onChange={manuDateChangeHandler}
                   onBlur={manuDateBlurHandler}
-                // label="Manufacture date"
+                  // label="Manufacture date"
                 />
-                <FormHelperText>{manuDateHasError ? manuDateError : ""}</FormHelperText>
+                <FormHelperText>
+                  {manuDateHasError ? manuDateError : ""}
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={6}>
-              <InputLabel htmlFor="outlined-adornment-password">Expire Date*</InputLabel>
-              <FormControl variant="outlined" fullWidth required error={expireDateHasError}>
+              <InputLabel htmlFor="outlined-adornment-password">
+                Expire Date*
+              </InputLabel>
+              <FormControl
+                variant="outlined"
+                fullWidth
+                required
+                error={expireDateHasError}
+              >
                 <OutlinedInput
                   type="date"
                   value={expireDate}
                   onChange={expireDateChangeHandler}
                   onBlur={expireDateBlurHandler}
-                // label="Manufacture date"
+                  // label="Manufacture date"
                 />
-                <FormHelperText>{expireDateHasError ? expireDateError : ""}</FormHelperText>
+                <FormHelperText>
+                  {expireDateHasError ? expireDateError : ""}
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
@@ -451,20 +599,63 @@ function AddProductForm(props) {
                 helperText={fieldAddressHasError ? fieldAddressError : ""}
               />
             </Grid>
+            <Grid item xs={6}>
+              <PlaceSelector
+                label="District"
+                value={city}
+                onChange={cityChangeHandler}
+                onBlur={cityBlurHandler}
+                cities={districtPlaces}
+                hasError={cityHasError}
+                error={cityError}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <PlaceSelector
+                label="City"
+                value={town}
+                onChange={townChangeHandler}
+                onBlur={townBlurHandler}
+                cities={cityPlaces}
+                disabled={city === ""}
+                hasError={townHasError}
+                error={townError}
+              />
+            </Grid>
             <Grid item xs={12}>
               <div>
                 <Grid container spacing={2}>
                   <Grid item xs={3}>
-                    <UploadProduct id={1} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                    <UploadProduct
+                      id={1}
+                      images={productImages}
+                      onDelete={deleteImageHandler}
+                      size={`${style.width / 4}px`}
+                    />
                   </Grid>
                   <Grid item xs={3}>
-                    <UploadProduct id={2} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                    <UploadProduct
+                      id={2}
+                      images={productImages}
+                      onDelete={deleteImageHandler}
+                      size={`${style.width / 4}px`}
+                    />
                   </Grid>
                   <Grid item xs={3}>
-                    <UploadProduct id={3} images={productImages} onDelete={deleteImageHandler}  size={`${style.width / 4}px`} />
+                    <UploadProduct
+                      id={3}
+                      images={productImages}
+                      onDelete={deleteImageHandler}
+                      size={`${style.width / 4}px`}
+                    />
                   </Grid>
                   <Grid item xs={3}>
-                    <UploadProduct id={4} images={productImages} onDelete={deleteImageHandler} size={`${style.width / 4}px`} />
+                    <UploadProduct
+                      id={4}
+                      images={productImages}
+                      onDelete={deleteImageHandler}
+                      size={`${style.width / 4}px`}
+                    />
                   </Grid>
                 </Grid>
               </div>
@@ -474,7 +665,9 @@ function AddProductForm(props) {
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox defaultChecked />}
+                control={
+                  <Checkbox checked={checked} onChange={locationSetHandler} />
+                }
                 label={
                   <p className={classes.text}>
                     Make sure you have set your product location
@@ -493,12 +686,11 @@ function AddProductForm(props) {
                 Submit
               </Button>
             </Grid>
-
           </Grid>
         </form>
       </Box>
     </AddProductContext.Provider>
-  )
+  );
 }
 
-export default AddProductForm
+export default AddProductForm;

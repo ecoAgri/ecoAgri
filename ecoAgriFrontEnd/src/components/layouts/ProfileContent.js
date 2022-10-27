@@ -1,4 +1,4 @@
-import { Avatar, Grid, IconButton } from '@mui/material'
+import { Avatar, Button, Grid, IconButton } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import ProfileDetails from '../farmer/profile/ProfileDetails'
@@ -6,6 +6,7 @@ import ShowBankDetails from '../farmer/sell/ShowBankDetails'
 import CenteredBox from '../ui/CenteredBox'
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
+import ProfileImageContainer from './ProfileImageContainer'
 
 
 const style = {
@@ -21,6 +22,18 @@ const style = {
     // p: 4,
     // pr: 0,
 }
+
+
+const style2 = {
+    width: 400,
+    height: 400,
+    bgcolor: 'background.paper',
+    // border: '2px solid #000',
+    borderRadius: 2,
+    boxShadow: 24,
+    p: 4,
+    overflow: "hidden"
+};
 function ProfileContent() {
     let user = useSelector((state) => state.user.currentUser);
     // useEffect(()=>{
@@ -32,14 +45,17 @@ function ProfileContent() {
     return (
         <div>
             <Grid container spacing={5}>
-                <Grid item sm={12} md={5}>
+                <Grid item sm={12} md={4}>
                     <CenteredBox align="center">
-                        <IconButton>
+                        <Box style={style2}>
+                            <ProfileImageContainer />
+                        </Box>
+                        {/* <IconButton>
                             <Avatar sx={{ width: 200, height: 200 }} />
-                        </IconButton>
+                        </IconButton> */}
                     </CenteredBox>
                 </Grid>
-                <Grid item sm={12} md={7}>
+                <Grid item sm={12} md={8}>
                     <ProfileDetails />
                 </Grid>
             </Grid>

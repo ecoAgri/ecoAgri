@@ -30,16 +30,11 @@ export const getUser = async (req, res) => {
 //UPDATE
 export const updateUser = async (req, res) => {
   try {
-    const user_update = await Users.update(
-      {
-        address: "466",
+    const update_update = await Users.update(req.body, {
+      where: {
+        id: req.params.id,
       },
-      {
-        where: {
-          id: req.params.id,
-        },
-      }
-    );
+    });
     const users = await Users.findOne({
       where: {
         id: req.params.id,

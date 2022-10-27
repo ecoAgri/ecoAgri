@@ -53,7 +53,7 @@ function Carousel(props) {
     };
 
     return (
-        <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1 }}>
             <MobileStepper
                 steps={maxSteps}
                 position="static"
@@ -97,7 +97,7 @@ function Carousel(props) {
                                 sx={{
                                     height: 255,
                                     display: 'block',
-                                    maxWidth: 400,
+                                    // maxWidth: 400,
                                     overflow: 'hidden',
                                     width: '100%',
                                 }}
